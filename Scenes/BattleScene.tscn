@@ -1,0 +1,609 @@
+[gd_scene format=3 uid="uid://dk05hs3wkgexk"]
+
+[ext_resource type="Script" uid="uid://cosw3yxyie7sx" path="res://scripts/BattleScene.gd" id="1_12f34"]
+[ext_resource type="Script" path="res://scripts/SettingsPanel.gd" id="2_settings"]
+[ext_resource type="Texture2D" path="res://assets/use.png" id="3_use"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.08, 0.18, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.45, 0.85, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 24.0
+content_margin_top = 16.0
+content_margin_right = 24.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scan_bg"]
+bg_color = Color(0.04, 0.07, 0.16, 0.95)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bar"]
+bg_color = Color(0.15, 0.15, 0.25, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.15, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.15, 0.75, 0.25, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sp_fill"]
+bg_color = Color(0.3, 0.45, 0.95, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sp_bar"]
+bg_color = Color(0.15, 0.15, 0.25, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.15, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scan_fill"]
+bg_color = Color(0.2, 0.75, 1.0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scan_perfect"]
+bg_color = Color(1.0, 0.85, 0.15, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_log"]
+bg_color = Color(0.08, 0.08, 0.18, 0.92)
+content_margin_left = 8.0
+content_margin_right = 50.0
+content_margin_top = 8.0
+content_margin_bottom = 24.0
+
+[node name="BattleScene" type="Node2D"]
+script = ExtResource("1_12f34")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1280.0
+offset_bottom = 520.0
+color = Color(0.12, 0.14, 0.22, 1)
+
+[node name="EnemySandGround" type="Sprite2D" parent="."]
+position = Vector2(760, 320)
+z_index = 1
+
+[node name="PlayerSandGround" type="Sprite2D" parent="."]
+position = Vector2(380, 580)
+z_index = 1
+
+[node name="EnemySprite" type="Sprite2D" parent="."]
+position = Vector2(760, 180)
+scale = Vector2(2, 2)
+z_index = 2
+
+[node name="StatusIcon" type="Sprite2D" parent="EnemySprite"]
+position = Vector2(150, -120)
+scale = Vector2(0.6, 0.6)
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+position = Vector2(380, 430)
+scale = Vector2(2.5, 2.5)
+z_index = 2
+
+[node name="StatusIcon" type="Sprite2D" parent="PlayerSprite"]
+position = Vector2(-140, -120)
+scale = Vector2(0.6, 0.6)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="EnemyPanel" type="VBoxContainer" parent="UI"]
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 380.0
+offset_bottom = 130.0
+theme_override_constants/separation = 4
+
+[node name="EnemyName" type="Label" parent="UI/EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Enemy"
+
+[node name="EnemyLevel" type="Label" parent="UI/EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Lv 1"
+
+[node name="EnemyHPBar" type="ProgressBar" parent="UI/EnemyPanel"]
+custom_minimum_size = Vector2(280, 22)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+
+[node name="EnemyHPLabel" type="Label" parent="UI/EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "100 / 100"
+
+[node name="PlayerPanel" type="VBoxContainer" parent="UI"]
+offset_left = 900.0
+offset_top = 320.0
+offset_right = 1260.0
+offset_bottom = 470.0
+theme_override_constants/separation = 4
+
+[node name="PlayerName" type="Label" parent="UI/PlayerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Partner"
+
+[node name="PlayerLevel" type="Label" parent="UI/PlayerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Lv 1"
+
+[node name="PlayerHPBar" type="ProgressBar" parent="UI/PlayerPanel"]
+custom_minimum_size = Vector2(280, 18)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+
+[node name="PlayerHPLabel" type="Label" parent="UI/PlayerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "100 / 100"
+
+[node name="PlayerXPBar" type="ProgressBar" parent="UI/PlayerPanel"]
+custom_minimum_size = Vector2(280, 12)
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="PlayerSPBar" type="ProgressBar" parent="UI/PlayerPanel"]
+custom_minimum_size = Vector2(280, 12)
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar")
+theme_override_styles/fill = SubResource("StyleBoxFlat_sp_fill")
+
+[node name="PlayerSPLabel" type="Label" parent="UI/PlayerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "SP 0 / 0"
+
+[node name="BattleBottomPanel" type="PanelContainer" parent="UI"]
+offset_left = 0.0
+offset_top = 500.0
+offset_right = 1280.0
+offset_bottom = 700.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="HBoxRoot" type="HBoxContainer" parent="UI/BattleBottomPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LeftPanel" type="Control" parent="UI/BattleBottomPanel/HBoxRoot"]
+custom_minimum_size = Vector2(640, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MainActionPanel" type="GridContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 624.0
+offset_bottom = 184.0
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="FightButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Fight"
+
+[node name="DigiviceButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Digivice"
+
+[node name="RunButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Run"
+
+[node name="DigimonButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Digimon"
+
+[node name="MovePanel" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 624.0
+offset_bottom = 192.0
+theme_override_constants/separation = 6
+
+[node name="MoveGrid" type="GridContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Move1Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+
+[node name="Move2Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 15
+
+[node name="Move3Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+
+[node name="Move4Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(296, 76)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 15
+
+[node name="DigivicePanel" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 624.0
+offset_bottom = 192.0
+theme_override_constants/separation = 10
+
+[node name="VBox" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="DigiviceTitle" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Item Bag"
+
+[node name="ScanLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Collection: 0 / 200%"
+
+[node name="ScanBar" type="ProgressBar" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+max_value = 200.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_scan_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_scan_fill")
+
+[node name="ScanHintLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Defeat enemies to scan them. At 200% you can Catch them!"
+
+[node name="ItemList" type="ScrollContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+horizontal_scroll_mode = 0
+theme_override_constants/separation = 4
+
+[node name="List" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ItemList"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="CatchButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+disabled = true
+text = "Catch"
+
+[node name="DigivolveButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+disabled = true
+text = "Digivolve (0%)"
+
+[node name="Sprite" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 0
+stretch_mode = 5
+
+[node name="DigimonPanel" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 624.0
+offset_bottom = 192.0
+theme_override_constants/separation = 3
+
+[node name="TopRow" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="DigimonSprite" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+expand_mode = 0
+stretch_mode = 5
+
+[node name="RightVBox" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="DigimonStatsLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Stats..."
+
+[node name="TypeIcon" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DigimonMovesLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Moves..."
+
+[node name="DigimonEvoLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Evolution..."
+
+[node name="MemberSlider" type="HSlider" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+step = 1.0
+value = 0.0
+
+[node name="ButtonRow" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SendOutButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/ButtonRow"]
+custom_minimum_size = Vector2(140, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+disabled = true
+text = "Send Out"
+
+[node name="MemberNamesLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Party (1/6): Partner"
+
+[node name="RightColumn" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot"]
+custom_minimum_size = Vector2(640, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BackMargin" type="MarginContainer" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn"]
+layout_mode = 2
+theme_override_constants/margin_top = 12
+
+[node name="BackButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BackMargin"]
+custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_font_sizes/font_size = 16
+text = "← Back"
+
+[node name="ScanDrop" type="Control" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+
+[node name="ScanBox" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="ScanTopLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/ScanBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Scan: 0%"
+
+[node name="ScanTopBar" type="ProgressBar" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/ScanBox"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 200.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_scan_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_scan_fill")
+
+[node name="BattleLog" type="PanelContainer" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 120)
+theme_override_styles/panel = SubResource("StyleBoxFlat_log")
+
+[node name="LogLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BattleLog"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "What will you do?"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SettingsPanel" type="Control" parent="UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+process_mode = 3
+script = ExtResource("2_settings")
+
+[node name="Dim" type="ColorRect" parent="UI/SettingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Panel" type="PanelContainer" parent="UI/SettingsPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -185.0
+offset_right = 260.0
+offset_bottom = 185.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="UI/SettingsPanel/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="HintLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Recolor the battle menu (Fight / Run / ...) — Esc to close"
+horizontal_alignment = 1
+
+[node name="NormalRow" type="HBoxContainer" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+
+[node name="NormalLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox/NormalRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Button color"
+
+[node name="NormalPicker" type="ColorPickerButton" parent="UI/SettingsPanel/Panel/VBox/NormalRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+
+[node name="HoverRow" type="HBoxContainer" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+
+[node name="HoverLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox/HoverRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Hover color"
+
+[node name="HoverPicker" type="ColorPickerButton" parent="UI/SettingsPanel/Panel/VBox/HoverRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+
+[node name="PressedRow" type="HBoxContainer" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+
+[node name="PressedLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox/PressedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Pressed color"
+
+[node name="PressedPicker" type="ColorPickerButton" parent="UI/SettingsPanel/Panel/VBox/PressedRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+
+[node name="PanelRow" type="HBoxContainer" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+
+[node name="PanelLabel" type="Label" parent="UI/SettingsPanel/Panel/VBox/PanelRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Panel color"
+
+[node name="PanelPicker" type="ColorPickerButton" parent="UI/SettingsPanel/Panel/VBox/PanelRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+
+[node name="BottomRow" type="HBoxContainer" parent="UI/SettingsPanel/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="ResetButton" type="Button" parent="UI/SettingsPanel/Panel/VBox/BottomRow"]
+custom_minimum_size = Vector2(140, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Reset"
+
+[node name="CloseButton" type="Button" parent="UI/SettingsPanel/Panel/VBox/BottomRow"]
+custom_minimum_size = Vector2(140, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Close"
+autowrap_mode = 3
+vertical_alignment = 1

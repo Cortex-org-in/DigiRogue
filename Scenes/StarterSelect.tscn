@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://dms51daqv6fm6"]
+
+[ext_resource type="Script" uid="uid://cwqehtuu2sta3" path="res://scripts/StarterSelect.gd" id="1_t0kim"]
+
+[node name="StarterSelect" type="Control" unique_id=422138083]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t0kim")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1667032175]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.07, 0.15, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=578397575]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer" unique_id=1073878683]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBox" unique_id=1986010404]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Choose your partner Digimon"
+horizontal_alignment = 1
+
+[node name="SubLabel" type="Label" parent="MarginContainer/VBox" unique_id=115417895]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Your partner grows stronger through every battle"
+horizontal_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="MarginContainer/VBox" unique_id=967603937]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="StarterGrid" type="GridContainer" parent="MarginContainer/VBox/HBox" unique_id=524106395]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 4
+
+[node name="DetailPanel" type="PanelContainer" parent="MarginContainer/VBox/HBox" unique_id=775420903]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/VBox/HBox/DetailPanel" unique_id=1930782316]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Scroll" type="ScrollContainer" parent="MarginContainer/VBox/HBox/DetailPanel/VBox" unique_id=1284273461]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DetailScroll" type="VBoxContainer" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll" unique_id=1290447723]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="SpritePreview" type="TextureRect" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=298172152]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 0
+stretch_mode = 5
+
+[node name="DigimonName" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=1996706248]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Select a Digimon"
+horizontal_alignment = 1
+
+[node name="TypeLabel" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=1645701624]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "---"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=666013165]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Click a Digimon on the left to see its stats."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Stats" type="VBoxContainer" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=1026472611]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=82423027]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="HPVal" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=179075984]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "HP: ---"
+
+[node name="ATKBar" type="ProgressBar" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=1371605048]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="ATKVal" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=20194938]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "ATK: ---"
+
+[node name="DEFBar" type="ProgressBar" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=1513845708]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="DEFVal" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=227895517]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "DEF: ---"
+
+[node name="SPDBar" type="ProgressBar" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=556085366]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="SPDVal" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats" unique_id=764870161]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "SPD: ---"
+
+[node name="MovesLabel" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=61541124]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Moves: ---"
+autowrap_mode = 3
+
+[node name="EvoLabel" type="Label" parent="MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll" unique_id=493147739]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Evolution: ---"
+autowrap_mode = 3
+
+[node name="ConfirmButton" type="Button" parent="MarginContainer/VBox/HBox/DetailPanel/VBox" unique_id=906462255]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "Choose!"

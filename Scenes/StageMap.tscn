@@ -1,0 +1,266 @@
+[gd_scene format=3 uid="uid://bwa3fyucmq16f"]
+
+[ext_resource type="Script" uid="uid://8y3bevue6uh1" path="res://scripts/StageMap.gd" id="1_tf2d7"]
+
+[node name="StageMap" type="Control" unique_id=1694696080]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tf2d7")
+
+[node name="Background" type="ColorRect" parent="." unique_id=125520126]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.07, 0.13, 1)
+
+[node name="EncounterFlash" type="ColorRect" parent="." unique_id=1149785807]
+modulate = Color(1, 1, 1, 0)
+z_index = 100
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1824698856]
+
+[node name="HUDPanel" type="PanelContainer" parent="HUD" unique_id=2053516988]
+offset_right = 1152.0
+offset_bottom = 52.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/HUDPanel" unique_id=1646615793]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="StageLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=953825767]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Stage 1 / 50"
+
+[node name="DigimonLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=66971778]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Agumon  Lv.1"
+
+[node name="HPLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=1924633229]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "HP  120/120"
+
+[node name="GoldLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=169622984]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Tickets: 0"
+
+[node name="ScanLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Digivice: 0%"
+
+[node name="AllyLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=39582331]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Ally: None"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1369162751]
+layout_mode = 0
+offset_top = 60.0
+offset_right = 1152.0
+offset_bottom = 420.0
+horizontal_scroll_mode = 2
+
+[node name="StageContainer" type="HBoxContainer" parent="ScrollContainer" unique_id=199802389]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="ChoicePanel" type="PanelContainer" parent="." unique_id=888225452]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -220.0
+offset_right = 240.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ChoicePanel" unique_id=79490646]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ChoiceTitle" type="Label" parent="ChoicePanel/VBoxContainer" unique_id=61296330]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "A mysterious door appears..."
+horizontal_alignment = 1
+
+[node name="ChoiceDesc" type="Label" parent="ChoicePanel/VBoxContainer" unique_id=904607941]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Three doors stand before you. Choose wisely."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Door1Button" type="Button" parent="ChoicePanel/VBoxContainer" unique_id=20141939]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Door 1"
+
+[node name="Door2Button" type="Button" parent="ChoicePanel/VBoxContainer" unique_id=1198912376]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Door 2"
+
+[node name="Door3Button" type="Button" parent="ChoicePanel/VBoxContainer" unique_id=1305659855]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Door 3"
+
+[node name="ResultPanel" type="PanelContainer" parent="." unique_id=132729630]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -160.0
+offset_right = 260.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ResultPanel" unique_id=1625505855]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ResultLabel" type="Label" parent="ResultPanel/VBoxContainer" unique_id=2017486818]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Result"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ContinueButton" type="Button" parent="ResultPanel/VBoxContainer" unique_id=839348574]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Continue"
+
+[node name="TrainingPanel" type="PanelContainer" parent="." unique_id=1376290500]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -240.0
+offset_right = 260.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TrainingPanel" unique_id=153276289]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TrainingLabel" type="Label" parent="TrainingPanel/VBoxContainer" unique_id=463986835]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Secret Training Ground!"
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="TrainingPanel/VBoxContainer" unique_id=191513776]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Bonus levels used: 0 / 5"
+horizontal_alignment = 1
+
+[node name="HealButton" type="Button" parent="TrainingPanel/VBoxContainer" unique_id=1950589245]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Rest and Heal (Free)"
+
+[node name="TrainButton" type="Button" parent="TrainingPanel/VBoxContainer" unique_id=109490603]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Train!  (+1 Level)"
+
+[node name="LeaveButton" type="Button" parent="TrainingPanel/VBoxContainer" unique_id=328427396]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Leave Training Ground"
+
+[node name="ShopPanel" type="PanelContainer" parent="."]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -260.0
+offset_right = 300.0
+offset_bottom = 260.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ShopPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ShopTitle" type="Label" parent="ShopPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Lucky! A Shop!"
+horizontal_alignment = 1
+
+[node name="ShopGoldLabel" type="Label" parent="ShopPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Tickets: 0   |   Digi: 0"
+horizontal_alignment = 1
+
+[node name="ShopList" type="VBoxContainer" parent="ShopPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LeaveShopButton" type="Button" parent="ShopPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Leave Shop"

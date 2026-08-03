@@ -1,0 +1,281 @@
+[gd_scene format=3 uid="uid://dhltdvd8278w3"]
+
+[ext_resource type="Script" uid="uid://d1tftjucvqgk1" path="res://scripts/RewardScene.gd" id="1_olepc"]
+
+[node name="RewardsScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_olepc")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.09, 0.15, 1)
+
+[node name="HeaderPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 90.0
+grow_horizontal = 2
+
+[node name="HeaderHBox" type="HBoxContainer" parent="HeaderPanel"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="FloorLabel" type="Label" parent="HeaderPanel/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "Floor 0 cleared!"
+
+[node name="GoldLabel" type="Label" parent="HeaderPanel/HeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Tickets: 0"
+
+[node name="DigiLabel" type="Label" parent="HeaderPanel/HeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Digi: 0"
+
+[node name="ResultLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 110.0
+offset_right = 300.0
+offset_bottom = 160.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "Victory!"
+horizontal_alignment = 1
+
+[node name="FreeItemLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 165.0
+offset_right = 400.0
+offset_bottom = 205.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 17
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DigimonSprite" type="Sprite2D" parent="."]
+position = Vector2(300, 300)
+scale = Vector2(1.5, 1.5)
+
+[node name="InfoPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 120.0
+offset_top = -300.0
+offset_right = 520.0
+offset_bottom = -30.0
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="InfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DigimonName" type="Label" parent="InfoPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Partner"
+
+[node name="DigimonLevel" type="Label" parent="InfoPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Level 1"
+
+[node name="DigimonType" type="Label" parent="InfoPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Fire"
+
+[node name="HPLabel" type="Label" parent="InfoPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "HP  100 / 100"
+
+[node name="XPBar" type="ProgressBar" parent="InfoPanel/VBox"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="XPLabel" type="Label" parent="InfoPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "XP  0 / 100"
+
+[node name="LevelUpPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 210.0
+offset_right = 300.0
+offset_bottom = 330.0
+grow_horizontal = 2
+
+[node name="VBox" type="VBoxContainer" parent="LevelUpPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LevelUpLabel" type="Label" parent="LevelUpPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Partner is Level 2!"
+horizontal_alignment = 1
+
+[node name="StatChangesLabel" type="Label" parent="LevelUpPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "HP: 120  ATK: 50  DEF: 40  SPD: 40"
+horizontal_alignment = 1
+
+[node name="ItemPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = -215.0
+offset_right = 420.0
+offset_bottom = 215.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="ItemPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Choose a reward!"
+horizontal_alignment = 1
+
+[node name="PaidLabel" type="Label" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Loot — buy 1 with Digi"
+horizontal_alignment = 1
+
+[node name="PaidContainer" type="HBoxContainer" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Item1Button" type="Button" parent="ItemPanel/VBox/PaidContainer"]
+custom_minimum_size = Vector2(185, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 1"
+
+[node name="Item2Button" type="Button" parent="ItemPanel/VBox/PaidContainer"]
+custom_minimum_size = Vector2(185, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 2"
+
+[node name="Item3Button" type="Button" parent="ItemPanel/VBox/PaidContainer"]
+custom_minimum_size = Vector2(185, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 3"
+
+[node name="Item4Button" type="Button" parent="ItemPanel/VBox/PaidContainer"]
+custom_minimum_size = Vector2(185, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 4"
+
+[node name="FreeLabel" type="Label" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Free pick — choose 1"
+horizontal_alignment = 1
+
+[node name="FreeContainer" type="HBoxContainer" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Item5Button" type="Button" parent="ItemPanel/VBox/FreeContainer"]
+custom_minimum_size = Vector2(185, 90)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 5"
+
+[node name="Item6Button" type="Button" parent="ItemPanel/VBox/FreeContainer"]
+custom_minimum_size = Vector2(185, 90)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 6"
+
+[node name="Item7Button" type="Button" parent="ItemPanel/VBox/FreeContainer"]
+custom_minimum_size = Vector2(185, 90)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Item 7"
+
+[node name="BottomRow" type="HBoxContainer" parent="ItemPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="RerollLabel" type="Label" parent="ItemPanel/VBox/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Rerolls: 3"
+vertical_alignment = 1
+
+[node name="RerollButton" type="Button" parent="ItemPanel/VBox/BottomRow"]
+custom_minimum_size = Vector2(200, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Reroll (3 left)"
+
+[node name="ContinueButton" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -90.0
+offset_right = 140.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "Continue"
