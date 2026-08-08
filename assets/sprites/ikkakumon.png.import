@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://5rdc3a8gdjlh"
-path="res://.godot/imported/plains_1280x460.png-71281eaa814bdb57f0da07be64bf6c8b.ctex"
+uid="uid://dlij3g0rrnywx"
+path="res://.godot/imported/ikkakumon.png-16c276579d29729cf22347c7e851ac91.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/plains_1280x460.png"
-dest_files=["res://.godot/imported/plains_1280x460.png-71281eaa814bdb57f0da07be64bf6c8b.ctex"]
+source_file="res://assets/sprites/ikkakumon.png"
+dest_files=["res://.godot/imported/ikkakumon.png-16c276579d29729cf22347c7e851ac91.ctex"]
 
 [params]
 

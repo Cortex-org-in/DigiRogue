@@ -4,7 +4,7 @@ extends Control
 #  REWARD SCENE
 #  Shown after every battle victory:
 #  - XP / digi / scan rewards
-#  - 4 paid loot slots: 1 healing, 1 revive, 1 SP, 1 random
+#  - 3 paid loot slots: 1 healing, 1 revive, 1 SP
 #    (buy 1 with Digi; tiered by floor; 3 free rerolls, then digi)
 #  - 3 free pick slots (rarer as floors rise)
 #  - Continue → Stage Map
@@ -34,17 +34,16 @@ extends Control
 @onready var item1_button       = $ItemPanel/VBox/PaidContainer/Item1Button
 @onready var item2_button       = $ItemPanel/VBox/PaidContainer/Item2Button
 @onready var item3_button       = $ItemPanel/VBox/PaidContainer/Item3Button
-@onready var item4_button       = $ItemPanel/VBox/PaidContainer/Item4Button
-@onready var item5_button       = $ItemPanel/VBox/FreeContainer/Item5Button
-@onready var item6_button       = $ItemPanel/VBox/FreeContainer/Item6Button
-@onready var item7_button       = $ItemPanel/VBox/FreeContainer/Item7Button
+@onready var item4_button       = $ItemPanel/VBox/FreeContainer/Item5Button
+@onready var item5_button       = $ItemPanel/VBox/FreeContainer/Item6Button
+@onready var item6_button       = $ItemPanel/VBox/FreeContainer/Item7Button
 @onready var reroll_label       = $ItemPanel/VBox/BottomRow/RerollLabel
 @onready var reroll_button      = $ItemPanel/VBox/BottomRow/RerollButton
 
 @onready var continue_button    = $ContinueButton
 
 # ── STATE ─────────────────────────────────────────────
-var paid_offers: Array = []   # 4 buyable items (heal / revive / SP / random)
+var paid_offers: Array = []   # 3 buyable items (heal / revive / SP)
 var free_offers: Array = []   # 3 free pick items
 var paid_chosen: bool  = false
 var free_chosen: bool  = false
@@ -65,7 +64,6 @@ func _ready():
 	item4_button.pressed.connect(_on_item_chosen.bind(3))
 	item5_button.pressed.connect(_on_item_chosen.bind(4))
 	item6_button.pressed.connect(_on_item_chosen.bind(5))
-	item7_button.pressed.connect(_on_item_chosen.bind(6))
 	reroll_button.pressed.connect(_on_reroll_pressed)
 
 	_update_header()
@@ -148,8 +146,8 @@ func _show_level_up_info():
 	level_up_panel.visible = false
 
 # ─────────────────────────────────────────────────────
-#  ITEM CHOICE — 4 paid loot slots + 3 free pick slots
-#  Paid: 1 healing, 1 revive, 1 SP, 1 random (buy 1 with digi)
+#  ITEM CHOICE — 3 paid loot slots + 3 free pick slots
+#  Paid: 1 healing, 1 revive, 1 SP (buy 1 with digi)
 #  Free: pick 1 of 3 random items (rarer as floors rise)
 # ─────────────────────────────────────────────────────
 
@@ -172,13 +170,7 @@ func _generate_offers():
 		ItemDB.get_heal_for_floor(floor_num),
 		ItemDB.get_revive_for_floor(floor_num),
 		ItemDB.get_sp_for_floor(floor_num),
-		ItemDB.get_random_item(floor_num),
 	]
-	# Make sure the random paid slot isn't a duplicate of the guaranteed ones
-	var attempts = 0
-	while paid_offers[3] in paid_offers.slice(0, 3) and attempts < 20:
-		paid_offers[3] = ItemDB.get_random_item(floor_num)
-		attempts += 1
 
 	free_offers = []
 	while free_offers.size() < 3:
@@ -190,8 +182,8 @@ func _get_item_price(item_name: String) -> int:
 	return ItemDB.get_scaled_price(item_name, SaveData.floor_number)
 
 func _update_offer_buttons():
-	var paid_buttons = [item1_button, item2_button, item3_button, item4_button]
-	for i in range(4):
+	var paid_buttons = [item1_button, item2_button, item3_button]
+	for i in range(3):
 		var item = ItemDB.get_item(paid_offers[i])
 		var price = _get_item_price(paid_offers[i])
 		paid_buttons[i].text = "%s\n%s\n[%s]  %d Digi" % [
@@ -203,7 +195,7 @@ func _update_offer_buttons():
 		paid_buttons[i].disabled = false
 		paid_buttons[i].modulate = Color(1, 1, 1, 1)
 
-	var free_buttons = [item5_button, item6_button, item7_button]
+	var free_buttons = [item4_button, item5_button, item6_button]
 	for i in range(3):
 		var item = ItemDB.get_item(free_offers[i])
 		free_buttons[i].text = "%s\n%s\n[%s]  FREE" % [
@@ -243,15 +235,15 @@ func _on_reroll_pressed():
 	_update_header()
 
 func _on_item_chosen(index: int):
-	var is_paid = index < 4
+	var is_paid = index < 3
 	if is_paid and paid_chosen:
 		return
 	if not is_paid and free_chosen:
 		return
 
-	var item_name = paid_offers[index] if is_paid else free_offers[index - 4]
+	var item_name = paid_offers[index] if is_paid else free_offers[index - 3]
 	var item = ItemDB.get_item(item_name)
-	var all_buttons = [item1_button, item2_button, item3_button, item4_button, item5_button, item6_button, item7_button]
+	var all_buttons = [item1_button, item2_button, item3_button, item4_button, item5_button, item6_button]
 
 	if is_paid:
 		var price = _get_item_price(item_name)
@@ -273,11 +265,11 @@ func _on_item_chosen(index: int):
 	# Lock the picked category's buttons; the other category stays usable
 	reroll_button.disabled = true
 	if is_paid:
-		for i in range(4):
+		for i in range(3):
 			all_buttons[i].disabled = true
 	else:
 		for i in range(3):
-			all_buttons[4 + i].disabled = true
+			all_buttons[3 + i].disabled = true
 
 	# Highlight chosen
 	all_buttons[index].modulate = Color(0.3, 1.0, 0.4)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmsvk1nwdlbf4"
-path="res://.godot/imported/garudamon.png-aae57056b60cbbd7f0893eb2bb1d8983.ctex"
+uid="uid://c277y6frhbrjq"
+path="res://.godot/imported/birdramon_back.png-ed21afe452f0975978a522d0759ba8d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/garudamon.png"
-dest_files=["res://.godot/imported/garudamon.png-aae57056b60cbbd7f0893eb2bb1d8983.ctex"]
+source_file="res://assets/sprites/birdramon_back.png"
+dest_files=["res://.godot/imported/birdramon_back.png-ed21afe452f0975978a522d0759ba8d5.ctex"]
 
 [params]
 

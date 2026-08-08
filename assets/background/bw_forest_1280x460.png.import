@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4hp5nqgfpxek"
-path="res://.godot/imported/birdamon_back.png-c166aa8b5254e94975ffff7ddade9c5e.ctex"
+uid="uid://bkbpt0bojhno"
+path="res://.godot/imported/bw_forest_1280x460.png-16bab4180f5f28557dff5a89b7fb205d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/birdamon_back.png"
-dest_files=["res://.godot/imported/birdamon_back.png-c166aa8b5254e94975ffff7ddade9c5e.ctex"]
+source_file="res://assets/background/bw_forest_1280x460.png"
+dest_files=["res://.godot/imported/bw_forest_1280x460.png-16bab4180f5f28557dff5a89b7fb205d.ctex"]
 
 [params]
 

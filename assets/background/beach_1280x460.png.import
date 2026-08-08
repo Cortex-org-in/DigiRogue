@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlkfep3hvei7j"
-path="res://.godot/imported/hell_1280x460.png-2d3249192a4d20a3945cc3e3681ee8d7.ctex"
+uid="uid://bgou3ipt0hk2r"
+path="res://.godot/imported/beach_1280x460.png-8feef27609e167d1ad46ea6d155b93d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/hell_1280x460.png"
-dest_files=["res://.godot/imported/hell_1280x460.png-2d3249192a4d20a3945cc3e3681ee8d7.ctex"]
+source_file="res://assets/background/beach_1280x460.png"
+dest_files=["res://.godot/imported/beach_1280x460.png-8feef27609e167d1ad46ea6d155b93d5.ctex"]
 
 [params]
 

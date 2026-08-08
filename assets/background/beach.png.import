@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfnd3pmtfw5um"
-path="res://.godot/imported/magnaangemon_back.png-77f66c1f731da03ef82be3f10190ee79.ctex"
+uid="uid://duedohooyoru"
+path="res://.godot/imported/beach.png-37a8252ad2d87a33bdb527cd8c71083b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/magnaangemon_back.png"
-dest_files=["res://.godot/imported/magnaangemon_back.png-77f66c1f731da03ef82be3f10190ee79.ctex"]
+source_file="res://assets/background/beach.png"
+dest_files=["res://.godot/imported/beach.png-37a8252ad2d87a33bdb527cd8c71083b.ctex"]
 
 [params]
 

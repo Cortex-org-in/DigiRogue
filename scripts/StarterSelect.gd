@@ -29,10 +29,11 @@ extends Control
 @onready var sub_label       = $MarginContainer/VBox/SubLabel
 
 # ── STATE ────────────────────────────────────────────
-var selected_starters: Array = []   # names the player picked (up to 3)
-var selected_starter: String = ""   # currently highlighted starter name
-var confirmed_starter: String = ""   # final pick to start the run
+var selected_starters: Array = []   # names the player picked
+var selected_starter: String = ""   # currently previewed starter name
 var starter_buttons = {}            # name → Button (card) node
+const STARTER_COST = 6              # capacity cost per starter
+const MAX_PARTY_CAPACITY = 20
 
 # ── GACHA UI (built at runtime) ──────────────────────
 var ticket_label: Label
@@ -72,10 +73,10 @@ const TYPE_ICONS = {
 # ─────────────────────────────────────────────────────
 
 func _ready():
-	title_label.text = "Choose your partner Digimon"
-	sub_label.text   = "Your partner will grow stronger through every battle"
+	title_label.text = "Choose your Digimon party"
+	sub_label.text   = "Capacity: 0 / %d  (each starter costs %d)" % [MAX_PARTY_CAPACITY, STARTER_COST]
 	
-	confirm_button.text = "Choose!"
+	confirm_button.text = "Start Run!"
 	confirm_button.disabled = true
 	confirm_button.pressed.connect(_on_confirm_pressed)
 	
@@ -83,7 +84,7 @@ func _ready():
 	_build_gacha_ui()
 	
 	# Auto-select the first one to show detail panel
-	_select_starter("Agumon")
+	_preview_starter("Agumon")
 
 # ─────────────────────────────────────────────────────
 #  BUILD THE GRID OF STARTER CARDS
@@ -172,37 +173,74 @@ func _build_starter_grid():
 		type_label.modulate = TYPE_COLORS.get(data["type"], Color.WHITE)
 		type_hbox.add_child(type_label)
 		
+		# Capacity cost
+		var cost_label = Label.new()
+		cost_label.text = "Cost: %d" % STARTER_COST
+		cost_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cost_label.add_theme_font_size_override("font_size", 9)
+		cost_label.modulate = Color(0.7, 0.7, 0.7)
+		vbox.add_child(cost_label)
+		
 		# Clickable button (invisible, overlays the whole card)
 		var btn = Button.new()
 		btn.flat = true
 		btn.name = starter_name + "Btn"
-		btn.pressed.connect(_select_starter.bind(starter_name))
+		btn.pressed.connect(_on_card_pressed.bind(starter_name))
 		card.add_child(btn)
 		
 		starter_buttons[starter_name] = card
 		starter_grid.add_child(card)
 
 # ─────────────────────────────────────────────────────
-#  SELECT A STARTER - updates right panel
+#  TOGGLE SELECTION + PREVIEW
 # ─────────────────────────────────────────────────────
 
-func _select_starter(starter_name: String):
-	selected_starter = starter_name
+func _on_card_pressed(starter_name: String):
+	"""Click a card: toggle it in/out of selection, always preview details."""
+	var data = DigimonDB.get_digimon(starter_name)
+	if data.is_empty():
+		return
 	
-	# Highlight selected card, dim others
+	if starter_name in selected_starters:
+		selected_starters.erase(starter_name)
+	else:
+		var cost = STARTER_COST
+		var used = selected_starters.size() * STARTER_COST
+		if used + cost > MAX_PARTY_CAPACITY:
+			return  # can't fit
+		selected_starters.append(starter_name)
+	
+	_refresh_card_highlights()
+	_update_capacity_label()
+	_preview_starter(starter_name)
+
+func _preview_starter(starter_name: String):
+	selected_starter = starter_name
+	_update_detail_panel(starter_name)
+	_update_confirm_button()
+
+func _refresh_card_highlights():
 	for name in starter_buttons:
 		var card = starter_buttons[name]
-		if name == starter_name:
+		if name in selected_starters:
 			card.add_theme_stylebox_override("panel", _make_selected_style())
 		else:
 			card.remove_theme_stylebox_override("panel")
-	
-	# Update detail panel
-	_update_detail_panel(starter_name)
-	
-	# Enable confirm button
-	confirm_button.disabled = false
-	confirm_button.text = "Choose %s!" % starter_name
+
+func _update_capacity_label():
+	var used = selected_starters.size() * STARTER_COST
+	sub_label.text = "Capacity: %d / %d  (%d Digimon)" % [used, MAX_PARTY_CAPACITY, selected_starters.size()]
+
+func _update_confirm_button():
+	if selected_starters.is_empty():
+		confirm_button.disabled = true
+		confirm_button.text = "Start Run!"
+	else:
+		confirm_button.disabled = false
+		if selected_starters.size() == 1:
+			confirm_button.text = "Start with %s!" % selected_starters[0]
+		else:
+			confirm_button.text = "Start with %d Digimon!" % selected_starters.size()
 
 # ─────────────────────────────────────────────────────
 #  UPDATE DETAIL PANEL
@@ -279,24 +317,20 @@ func _update_detail_panel(starter_name: String):
 # ─────────────────────────────────────────────────────
 
 func _on_confirm_pressed():
-	if selected_starter == "":
+	if selected_starters.is_empty():
 		return
-	
-	confirmed_starter = selected_starter
 	
 	# Flash confirm animation
 	var tween = create_tween()
 	tween.tween_property(confirm_button, "modulate", Color.GREEN, 0.2)
 	tween.tween_interval(0.5)
-	tween.tween_callback(_start_game_with_starter)
+	tween.tween_callback(_start_game_with_starters)
 
-func _start_game_with_starter():
-	# Initialize the run in SaveData
-	SaveData.start_new_run([confirmed_starter])
+func _start_game_with_starters():
+	SaveData.start_new_run(selected_starters)
 	
-	print("[StarterSelect] Player chose %s. Starting run!" % confirmed_starter)
+	print("[StarterSelect] Player chose %s. Starting run!" % selected_starters)
 	
-	# Go to the world map (next scene)
 	get_tree().change_scene_to_file("res://Scenes/StageMap.tscn")
 
 # ─────────────────────────────────────────────────────
@@ -455,7 +489,7 @@ func _do_pull(count: int):
 	# New pulls are now selectable as starters next run
 	_build_starter_grid()
 	if selected_starter != "":
-		_select_starter(selected_starter)
+		_preview_starter(selected_starter)
 
 func _close_gacha_panel():
 	if gacha_overlay != null:

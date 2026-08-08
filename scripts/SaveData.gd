@@ -31,6 +31,8 @@ var digivice_scan_rate = 0
 const COLLECTION_MAX = 200
 const MAX_PARTY_SIZE = 6   # max Digimon kept in your fighting party
 const MAX_GUEST_SIZE = 4   # max guest Digimon from door events
+const MAX_CAPACITY = 20    # total party capacity
+var party_capacity = 0      # current used capacity
 var digimon_collection = {}  # { name: 0-200 }
 var last_defeated_enemy = ""
 var last_battle_old_level = 1
@@ -114,6 +116,7 @@ func start_new_run(starter_names: Array):
 	digimon_collection = {}
 	digimon_roster = []
 	guest_roster = []
+	party_capacity = 0
 	last_defeated_enemy = ""
 	rerolls_left = REROLLS_PER_SEGMENT
 	reroll_segment = -1
@@ -131,34 +134,54 @@ func start_new_run(starter_names: Array):
 		var d = DigimonDB.get_digimon(starter_name)
 		if d.is_empty():
 			continue
-		# Apply persistent gacha bonuses (stars, abilities, start level) if owned
+		var cost = get_capacity_cost(d)
+		if party_capacity + cost > MAX_CAPACITY:
+			break
 		if GachaData.has_digimon(starter_name):
 			GachaData.apply_to_digimon(d)
 		d["level"] = d.get("start_level", 5)
 		d["experience"] = 0
-		# Starters get a 25% stat edge over wild digimon of the same species
 		for stat in ["hp", "attack", "defense", "sp_attack", "speed"]:
 			d[stat] = int(d[stat] * 1.25)
 		DigimonDB.recompute_sp(d)
 		d["current_hp"] = d["hp"]
 		d["current_sp"] = d["sp"]
-		d["status"] = "none"  # none, burn, freeze, paralysis, etc.
+		d["status"] = "none"
 		d["slot"] = digimon_roster.size()
 		digimon_roster.append(d)
+		party_capacity += cost
 
 	if digimon_roster.is_empty():
-		digimon_roster.append(DigimonDB.get_digimon("Agumon"))
+		var d = DigimonDB.get_digimon("Agumon")
+		digimon_roster.append(d)
+		party_capacity += get_capacity_cost(d)
 
-	# The first pick leads the party / battle
 	current_digimon = digimon_roster[0]
 
-	print("[SaveData] Started new run with party: %s (Level %d)" % [starter_names, current_digimon["level"]])
+	print("[SaveData] Started new run with party: %s (Capacity: %d/%d)" % [starter_names, party_capacity, MAX_CAPACITY])
 
 func end_run(victory: bool):
 	"""End the current run (either victory or defeat)."""
 	is_run_active = false
 	var run_duration = Time.get_ticks_msec() - run_start_time
 	print("[SaveData] Run ended. Victory: %s. Duration: %dms. Reached floor %d" % [victory, run_duration, floor_number])
+
+func get_capacity_cost(digimon: Dictionary) -> int:
+	"""Return the capacity cost of a Digimon based on its stage."""
+	var stage = digimon.get("stage", "Rookie")
+	match stage:
+		"Baby":     return 3
+		"Rookie":   return 6
+		"Champion": return 10
+		"Ultimate": return 15
+		"Mega":     return 20
+		_:          return 6
+
+func get_remaining_capacity() -> int:
+	return MAX_CAPACITY - party_capacity
+
+func can_add_to_party(digimon: Dictionary) -> bool:
+	return party_capacity + get_capacity_cost(digimon) <= MAX_CAPACITY
 
 # ─────────────────────────────────────────────────────
 #  DIGIMON MANAGEMENT
@@ -281,11 +304,11 @@ func catch_digimon(enemy_name: String) -> bool:
 		return false
 	if is_caught(enemy_name):
 		return false
-	if digimon_roster.size() >= MAX_PARTY_SIZE:
-		return false  # party full — max 6 kept
 	var d = DigimonDB.get_digimon(enemy_name)
 	if d.is_empty():
 		return false
+	if not can_add_to_party(d):
+		return false  # not enough capacity
 	if GachaData.has_digimon(enemy_name):
 		GachaData.apply_to_digimon(d)
 	d["level"]      = current_digimon.get("level", 1)
@@ -295,7 +318,8 @@ func catch_digimon(enemy_name: String) -> bool:
 	DigimonDB.recompute_sp(d)
 	d["current_sp"] = d["sp"]
 	digimon_roster.append(d)
-	print("[SaveData] %s joined your party! (%d/%d kept)" % [enemy_name, digimon_roster.size(), MAX_PARTY_SIZE])
+	party_capacity += get_capacity_cost(d)
+	print("[SaveData] %s joined your party! (Capacity: %d/%d)" % [enemy_name, party_capacity, MAX_CAPACITY])
 	return true
 
 func get_caught_count() -> int:

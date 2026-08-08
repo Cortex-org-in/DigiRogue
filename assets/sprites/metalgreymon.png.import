@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgou3ipt0hk2r"
-path="res://.godot/imported/beach_1280x460.png-1d200d558168aab9a329a5dac475fadd.ctex"
+uid="uid://b4mj2sdwefajv"
+path="res://.godot/imported/metalgreymon.png-ee4cbad64586ada1ce9b894de1726fc8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/beach_1280x460.png"
-dest_files=["res://.godot/imported/beach_1280x460.png-1d200d558168aab9a329a5dac475fadd.ctex"]
+source_file="res://assets/sprites/metalgreymon.png"
+dest_files=["res://.godot/imported/metalgreymon.png-ee4cbad64586ada1ce9b894de1726fc8.ctex"]
 
 [params]
 

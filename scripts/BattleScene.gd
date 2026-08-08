@@ -79,11 +79,20 @@ func _get_type_text(type: String) -> String:
 @onready var digivice_panel    = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel
 @onready var digivice_sprite   = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/Sprite
 @onready var scan_label        = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ScanLabel
-@onready var scan_bar          = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ScanBar
-@onready var scan_hint_label   = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ScanHintLabel
 @onready var item_list         = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ItemList
+@onready var item_grid         = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ItemList/Grid
 @onready var catch_button      = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/CatchButton
 @onready var digivolve_button    = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/DigivolveButton
+
+@onready var tab_all    = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar/TabAll
+@onready var tab_heal   = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar/TabHeal
+@onready var tab_sp     = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar/TabSP
+@onready var tab_status = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar/TabStatus
+@onready var tab_battle = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar/TabBattle
+
+@onready var revive_popup      = $UI/RevivePopup
+@onready var revive_list       = $UI/RevivePopup/Panel/VBox/ScrollContainer/List
+@onready var revive_cancel_btn = $UI/RevivePopup/Panel/VBox/CancelButton
 
 @onready var digimon_panel     = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel
 @onready var digimon_sprite    = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/DigimonSprite
@@ -91,8 +100,9 @@ func _get_type_text(type: String) -> String:
 @onready var digimon_moves_label = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox/DigimonMovesLabel
 @onready var digimon_evo_label = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox/DigimonEvoLabel
 @onready var digimon_type_icon  = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox/TypeIcon
-@onready var member_slider     = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/MemberSlider
-@onready var member_names_label = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/MemberNamesLabel
+@onready var member_scroll    = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/MemberScroll
+@onready var member_row       = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/MemberScroll/MemberRow
+@onready var party_label      = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/PartyLabel
 @onready var send_out_button   = $UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/ButtonRow/SendOutButton
 
 @onready var battle_bottom_panel = $UI/BattleBottomPanel
@@ -111,6 +121,9 @@ var is_showing_log: bool       = false
 var current_menu: BattleMenu   = BattleMenu.MAIN
 var player_swapped_this_turn: bool = false
 var strike_fallback: bool      = false
+var current_item_tab: String   = "all"
+var selected_member_idx: int   = 0
+var member_sprite_buttons: Array = []
 
 # ─────────────────────────────────────────────────────
 #  READY
@@ -134,11 +147,15 @@ func _ready():
 
 	catch_button.pressed.connect(_on_catch_pressed)
 	digivolve_button.pressed.connect(_on_digivolve_pressed)
-	member_slider.value_changed.connect(_on_member_slider_changed)
 	send_out_button.pressed.connect(_on_send_out_pressed)
-	digimon_panel.gui_input.connect(_on_digimon_panel_gui_input)
 
-	scan_bar.max_value = SaveData.COLLECTION_MAX
+	tab_all.pressed.connect(_on_tab_pressed.bind("all"))
+	tab_heal.pressed.connect(_on_tab_pressed.bind("heal"))
+	tab_sp.pressed.connect(_on_tab_pressed.bind("sp"))
+	tab_status.pressed.connect(_on_tab_pressed.bind("status"))
+	tab_battle.pressed.connect(_on_tab_pressed.bind("battle"))
+	revive_cancel_btn.pressed.connect(_on_revive_cancel)
+
 	scan_mini_bar.max_value = SaveData.COLLECTION_MAX
 
 	_setup_ui()
@@ -291,17 +308,6 @@ func _update_digivice_panel():
 	var enemy_name = enemy_digimon.get("name", "")
 	var scan = SaveData.get_collection_percent(enemy_name)
 	scan_label.text = "Collection: %d / %d%%" % [scan, SaveData.COLLECTION_MAX]
-	scan_bar.value = scan
-
-	if SaveData.is_caught(enemy_name):
-		scan_hint_label.text = "%s is already in your collection!" % enemy_name
-		scan_bar.modulate = Color(0.3, 1.0, 0.4)
-	elif SaveData.can_catch(enemy_name):
-		scan_hint_label.text = "★ 200%% complete! You can CATCH %s!" % enemy_name
-		scan_bar.modulate = Color(1.0, 0.9, 0.3)
-	else:
-		scan_hint_label.text = "Scan %s to 200%% to catch it." % enemy_name
-		scan_bar.modulate = Color(1, 1, 1)
 
 	_update_catch_button()
 	var current = SaveData.current_digimon
@@ -317,9 +323,9 @@ func _update_digivice_panel():
 	_build_item_list()
 
 func _update_digimon_panel():
+	selected_member_idx = 0
 	_build_member_list()
-	_update_member_names()
-	_update_member_slider()
+	_build_member_sprites()
 
 	_display_member(player_digimon)
 	_update_panel_sprite(digimon_sprite)
@@ -343,53 +349,122 @@ func _build_member_list():
 	if cur_name != "" and not seen.has(cur_name):
 		member_list.push_front(player_digimon)
 
-func _update_member_names():
+func _build_member_sprites():
+	for child in member_row.get_children():
+		child.queue_free()
+	member_sprite_buttons = []
+	for i in range(member_list.size()):
+		var d = member_list[i]
+		var is_current = d.get("name", "") == player_digimon.get("name", "")
+		var is_fainted = d.get("current_hp", 0) <= 0
+		var is_selected = i == selected_member_idx
+
+		var card = VBoxContainer.new()
+		card.custom_minimum_size = Vector2(52, 56)
+		card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		card.set("theme_override_constants/separa5tion", 1)
+
+		var sprite_tex = TextureRect.new()
+		sprite_tex.custom_minimum_size = Vector2(40, 40)
+		sprite_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		sprite_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		sprite_tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var sprite_path = d.get("sprite_back", d.get("sprite", ""))
+		if sprite_path != "" and ResourceLoader.exists(sprite_path):
+			sprite_tex.texture = load(sprite_path)
+		if is_fainted:
+			sprite_tex.modulate = Color(0.35, 0.35, 0.35, 0.5)
+		elif is_current:
+			sprite_tex.modulate = Color(0.5, 1.0, 0.5)
+		card.add_child(sprite_tex)
+
+		var name_lbl = Label.new()
+		name_lbl.text = d.get("name", "???")
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.add_theme_font_size_override("font_size", 8)
+		name_lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
+		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if is_fainted:
+			name_lbl.modulate = Color(1.0, 0.3, 0.3)
+		elif is_current:
+			name_lbl.modulate = Color(0.5, 1.0, 0.5)
+		card.add_child(name_lbl)
+
+		var hp_bar = ProgressBar.new()
+		hp_bar.custom_minimum_size = Vector2(40, 4)
+		hp_bar.max_value = maxf(d.get("hp", 1), 1)
+		hp_bar.value = d.get("current_hp", 0)
+		hp_bar.show_percentage = false
+		var bg = StyleBoxFlat.new()
+		bg.bg_color = Color(0.15, 0.15, 0.15)
+		bg.set_corner_radius_all(1)
+		hp_bar.add_theme_stylebox_override("background", bg)
+		var fill = StyleBoxFlat.new()
+		var hp_pct = hp_bar.value / hp_bar.max_value
+		if hp_pct > 0.5:
+			fill.bg_color = Color(0.2, 0.85, 0.2)
+		elif hp_pct > 0.25:
+			fill.bg_color = Color(0.9, 0.8, 0.1)
+		else:
+			fill.bg_color = Color(0.9, 0.15, 0.15)
+		fill.set_corner_radius_all(1)
+		hp_bar.add_theme_stylebox_override("fill", fill)
+		card.add_child(hp_bar)
+
+		var btn = Button.new()
+		btn.flat = true
+		btn.add_child(card)
+		card.set_anchors_preset(Control.PRESET_FULL_RECT)
+		card.offset_left = 0
+		card.offset_top = 0
+		card.offset_right = 0
+		card.offset_bottom = 0
+		btn.custom_minimum_size = Vector2(52, 56)
+
+		if is_fainted:
+			btn.modulate = Color(0.5, 0.5, 0.5, 0.6)
+		elif is_current:
+			btn.modulate = Color(0.5, 1.0, 0.5, 0.7)
+		elif is_selected:
+			btn.modulate = Color(0.7, 0.85, 1.0)
+		else:
+			btn.modulate = Color.WHITE
+
+		btn.pressed.connect(_on_member_sprite_pressed.bind(i))
+		member_row.add_child(btn)
+		member_sprite_buttons.append(btn)
+
 	var party_names = SaveData.get_party_names()
 	var guest_names = SaveData.get_guest_names()
-	var text = "Party (%d/6): %s" % [party_names.size(), " ".join(party_names)]
+	party_label.text = "Party (Cap: %d/%d): %s" % [SaveData.party_capacity, SaveData.MAX_CAPACITY, " ".join(party_names)]
 	if not guest_names.is_empty():
-		text += "\nGuests: %s" % " ".join(guest_names)
-	member_names_label.text = text
+		party_label.text += "\nGuests: %s" % " ".join(guest_names)
 
-func _update_member_slider():
-	var cur_name = player_digimon.get("name", "")
-	var cur_idx = 0
-	for i in range(member_list.size()):
-		if member_list[i].get("name", "") == cur_name:
-			cur_idx = i
+func _highlight_selected_member():
+	for i in range(member_sprite_buttons.size()):
+		if i >= member_list.size():
 			break
-	member_slider.min_value = 0
-	member_slider.max_value = maxf(0, member_list.size() - 1)
-	member_slider.step = 1
-	member_slider.set_value_no_signal(cur_idx)
-	member_slider.editable = member_list.size() > 1
+		var d = member_list[i]
+		var is_current = d.get("name", "") == player_digimon.get("name", "")
+		var is_fainted = d.get("current_hp", 0) <= 0
+		var is_selected = i == selected_member_idx
+		if is_fainted:
+			member_sprite_buttons[i].modulate = Color(0.5, 0.5, 0.5, 0.6)
+		elif is_current:
+			member_sprite_buttons[i].modulate = Color(0.5, 1.0, 0.5, 0.7)
+		elif is_selected:
+			member_sprite_buttons[i].modulate = Color(0.7, 0.85, 1.0)
+		else:
+			member_sprite_buttons[i].modulate = Color.WHITE
 
-func _on_member_slider_changed(value: float):
+func _on_member_sprite_pressed(idx: int):
 	if battle_over or is_showing_log:
 		return
-	if value < 0 or value >= member_list.size():
+	if idx < 0 or idx >= member_list.size():
 		return
-	_update_member_display(int(value))
-
-func _on_digimon_panel_gui_input(event: InputEvent):
-	if battle_over or is_showing_log:
-		return
-	if current_menu != BattleMenu.DIGIMON:
-		return
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-			_cycle_member(-1)
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-			_cycle_member(1)
-
-func _cycle_member(direction: int):
-	if member_list.size() <= 1:
-		return
-	var cur_idx = int(member_slider.value)
-	var new_idx = clampi(cur_idx + direction, 0, member_list.size() - 1)
-	if new_idx != cur_idx:
-		member_slider.set_value_no_signal(new_idx)
-		_update_member_display(new_idx)
+	selected_member_idx = idx
+	_highlight_selected_member()
+	_update_member_display(idx)
 
 func _update_member_display(idx: int):
 	if idx < 0 or idx >= member_list.size():
@@ -412,16 +487,17 @@ func _on_send_out_pressed():
 		return
 	if member_list.size() <= 1:
 		return
-	var idx = int(member_slider.value)
-	if idx < 0 or idx >= member_list.size():
+	if selected_member_idx < 0 or selected_member_idx >= member_list.size():
 		return
-	var selected = member_list[idx]
+	var selected = member_list[selected_member_idx]
 	if selected.get("name", "") == player_digimon.get("name", ""):
 		return
 	if selected.get("current_hp", 0) <= 0:
 		return
+	var old_name = player_digimon.get("name", "???")
 	SaveData.current_digimon = selected
 	player_digimon = selected
+	_add_log("%s, come back!" % old_name)
 	_add_log("Go, %s!" % selected.get("name", "???"))
 	_show_next_log()
 	_update_player_ui()
@@ -479,15 +555,15 @@ func _update_scan_display():
 
 func _get_background_for_floor(floor_num: int) -> String:
 	if floor_num <= 10:
-		return "res://assets/beach_1280x460.png"
+		return "res://assets/background/beach_1280x460.png"
 	elif floor_num <= 20:
-		return "res://assets/plains_1280x460.png"
+		return "res://assets/background/plains_1280x460.png"
 	elif floor_num <= 30:
-		return "res://assets/bw_forest_1280x460.png"
+		return "res://assets/background/bw_forest_1280x460.png"
 	elif floor_num <= 40:
-		return "res://assets/castle_1280x460.png"
+		return "res://assets/background/castle_1280x460.png"
 	else:
-		return "res://assets/hell_1280x460.png"
+		return "res://assets/background/hell_1280x460.png"
 
 func _load_background():
 	var bg_path = _get_background_for_floor(SaveData.floor_number)
@@ -543,14 +619,14 @@ func _setup_ui():
 	# Position sand ground shadows at feet of each Digimon
 	var enemy_sand_path = "res://assets/enemybaseFieldSand2.png"
 	if enemy_digimon.get("name", "") == "Biyomon":
-		enemy_sand_path = "res://assets/biyomon_ground.png"
+		enemy_sand_path = "res://assets/background/biyomon_ground.png"
 	if ResourceLoader.exists(enemy_sand_path):
 		enemy_sand_ground.texture = load(enemy_sand_path)
 	enemy_sand_ground.position = Vector2(enemy_sprite.position.x, enemy_sprite.position.y + 120)
 
 	var player_sand_path = "res://assets/enemybaseFieldSand.png"
 	if player_digimon.get("name", "") == "Biyomon":
-		player_sand_path = "res://assets/biyomon_ground.png"
+		player_sand_path = "res://assets/background/biyomon_ground.png"
 	if ResourceLoader.exists(player_sand_path):
 		player_sand_ground.texture = load(player_sand_path)
 	player_sand_ground.position = Vector2(player_sprite.position.x, player_sprite.position.y + 200)
@@ -677,19 +753,28 @@ func _update_enemy_ui():
 func _update_move_buttons():
 	var moves = player_digimon.get("moves", [])
 	var cur_sp = player_digimon.get("current_sp", 0)
+	var enemy_type = enemy_digimon.get("type", "")
 	var any_affordable = false
 	for i in range(move_buttons.size()):
 		if i < moves.size():
 			var move_name = moves[i]
 			var move_data = DigimonDB.get_move(move_name)
 			var sp_cost   = move_data.get("sp_cost", 0)
+			var move_type = move_data.get("type", "")
 			var affordable = cur_sp >= sp_cost
 			if affordable:
 				any_affordable = true
-			move_buttons[i].text = "%s\n%s  SP %d" % [
+			var eff = DigimonDB.get_type_multiplier(move_type, enemy_type)
+			var eff_tag = ""
+			if eff >= 1.5:
+				eff_tag = "  SE"
+			elif eff <= 0.5:
+				eff_tag = "  NVE"
+			move_buttons[i].text = "%s\n%s  SP %d%s" % [
 				move_name,
-				move_data.get("type", "").capitalize(),
-				sp_cost
+				move_type.capitalize(),
+				sp_cost,
+				eff_tag
 			]
 			move_buttons[i].visible = true
 			move_buttons[i].disabled = not affordable or battle_over
@@ -699,7 +784,13 @@ func _update_move_buttons():
 	# Fallback free basic attack when out of SP or few moves learned
 	strike_fallback = not any_affordable
 	if strike_fallback and move_buttons.size() > 0:
-		move_buttons[0].text = "Strike\nBasic  SP 0"
+		var eff = DigimonDB.get_type_multiplier("vaccine", enemy_type)
+		var eff_tag = ""
+		if eff >= 1.5:
+			eff_tag = "  SE"
+		elif eff <= 0.5:
+			eff_tag = "  NVE"
+		move_buttons[0].text = "Strike\nBasic  SP 0%s" % eff_tag
 		move_buttons[0].visible = true
 		move_buttons[0].disabled = battle_over
 
@@ -752,21 +843,41 @@ func _set_buttons_enabled(enabled: bool):
 # ─────────────────────────────────────────────────────
 
 func _build_item_list():
-	var list = item_list.get_node("List")
-	for child in list.get_children():
+	for child in item_grid.get_children():
 		child.queue_free()
 	for item in SaveData.items:
 		var item_data = ItemDB.get_item(item["name"])
 		if item_data.get("effect", "") == "ticket":
-			continue  # tickets are currency, not usable in battle
+			continue
+		if not _item_matches_tab(item_data):
+			continue
 		var btn = Button.new()
-		btn.custom_minimum_size = Vector2(0, 30)
+		btn.custom_minimum_size = Vector2(280, 36)
 		btn.add_theme_font_size_override("font_size", 12)
-		btn.text = "%s (x%d)" % [item["name"], item["quantity"]]
+		btn.text = "%s  x%d" % [item["name"], item["quantity"]]
 		btn.pressed.connect(_on_item_pressed.bind(item["name"]))
 		btn.mouse_entered.connect(_on_item_hover.bind(item_data))
 		btn.mouse_exited.connect(_on_item_hover_exit)
-		list.add_child(btn)
+		item_grid.add_child(btn)
+
+func _item_matches_tab(item: Dictionary) -> bool:
+	if current_item_tab == "all":
+		return true
+	var eff = item.get("effect", "")
+	match current_item_tab:
+		"heal":
+			return eff in ["heal", "full_recovery", "revive"]
+		"sp":
+			return eff == "restore_sp"
+		"status":
+			return eff.begins_with("cure_")
+		"battle":
+			return eff in ["boost", "boost_all", "boost_two"]
+	return true
+
+func _on_tab_pressed(tab: String):
+	current_item_tab = tab
+	_build_item_list()
 
 func _on_item_hover(item: Dictionary):
 	if current_menu != BattleMenu.DIGIVICE:
@@ -790,6 +901,10 @@ func _on_item_pressed(item_name: String):
 
 	var item = ItemDB.get_item(item_name)
 	if item.is_empty() or _get_item_count(item_name) <= 0:
+		return
+
+	if item.get("effect", "") == "revive":
+		_show_revive_popup(item_name)
 		return
 
 	var used = ItemDB.apply_item_effect(item, player_digimon)
@@ -864,12 +979,8 @@ func _gain_battle_scan(amount: int):
 
 func _pulse_scan_bars():
 	var tween = create_tween()
-	tween.set_parallel(true)
 	tween.tween_property(scan_mini_bar, "modulate", Color(0.3, 1.0, 1.0), 0.15)
-	tween.tween_property(scan_bar, "modulate", Color(0.3, 1.0, 1.0), 0.15)
-	tween.chain().set_parallel(true)
 	tween.tween_property(scan_mini_bar, "modulate", Color.WHITE, 0.25)
-	tween.tween_property(scan_bar, "modulate", Color.WHITE, 0.25)
 
 # ─────────────────────────────────────────────────────
 #  PLAYER MOVE
@@ -1124,6 +1235,48 @@ func _check_player_fainted():
 			battle_over = false
 		else:
 			await _handle_defeat()
+
+var _pending_revive_item: String = ""
+
+func _show_revive_popup(item_name: String):
+	_pending_revive_item = item_name
+	for child in revive_list.get_children():
+		child.queue_free()
+	for d in SaveData.digimon_roster:
+		if d.get("current_hp", 1) <= 0:
+			var btn = Button.new()
+			btn.custom_minimum_size = Vector2(0, 36)
+			btn.add_theme_font_size_override("font_size", 14)
+			btn.text = "%s  (Lv.%d)  HP: %d/%d" % [d.get("name","???"), d.get("level",1), d.get("current_hp",0), d.get("hp",1)]
+			btn.pressed.connect(_on_revive_target.bind(d))
+			revive_list.add_child(btn)
+	if revive_list.get_child_count() == 0:
+		var lbl = Label.new()
+		lbl.text = "No fainted Digimon to revive."
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		revive_list.add_child(lbl)
+	revive_popup.visible = true
+	revive_popup.mouse_filter = Control.MOUSE_FILTER_STOP
+
+func _on_revive_target(d: Dictionary):
+	revive_popup.visible = false
+	var item = ItemDB.get_item(_pending_revive_item)
+	if item.is_empty():
+		return
+	ItemDB.apply_item_effect(item, d)
+	SaveData.use_item(_pending_revive_item)
+	_add_log("%s was revived!" % d.get("name", "???"))
+	_show_next_log()
+	_update_all_ui()
+	_build_member_list()
+	_build_member_sprites()
+	_display_member(d)
+	_update_panel_sprite(digimon_sprite)
+	_update_digivice_panel()
+
+func _on_revive_cancel():
+	revive_popup.visible = false
+	_pending_revive_item = ""
 
 func _try_revive_item() -> bool:
 	"""Use a revive/full-recovery item from inventory to bring the fainted digimon back."""

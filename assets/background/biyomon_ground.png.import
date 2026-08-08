@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkbpt0bojhno"
-path="res://.godot/imported/bw_forest_1280x460.png-8624a4de45118ec8c6bc9f4dfb625111.ctex"
+uid="uid://cl1iuvmpqsyy6"
+path="res://.godot/imported/biyomon_ground.png-6e8e1a0f93ac5c6541bea084002db9fe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bw_forest_1280x460.png"
-dest_files=["res://.godot/imported/bw_forest_1280x460.png-8624a4de45118ec8c6bc9f4dfb625111.ctex"]
+source_file="res://assets/background/biyomon_ground.png"
+dest_files=["res://.godot/imported/biyomon_ground.png-6e8e1a0f93ac5c6541bea084002db9fe.ctex"]
 
 [params]
 

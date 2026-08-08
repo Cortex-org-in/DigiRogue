@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://duedohooyoru"
-path="res://.godot/imported/beach.png-417914f094212b69a4b9c9b124de2f37.ctex"
+uid="uid://5rdc3a8gdjlh"
+path="res://.godot/imported/plains_1280x460.png-add887ba44faca6aa7aae2ca28ee6fcf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/beach.png"
-dest_files=["res://.godot/imported/beach.png-417914f094212b69a4b9c9b124de2f37.ctex"]
+source_file="res://assets/background/plains_1280x460.png"
+dest_files=["res://.godot/imported/plains_1280x460.png-add887ba44faca6aa7aae2ca28ee6fcf.ctex"]
 
 [params]
 

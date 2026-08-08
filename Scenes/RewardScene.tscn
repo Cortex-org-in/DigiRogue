@@ -81,7 +81,7 @@ autowrap_mode = 3
 
 [node name="DigimonSprite" type="Sprite2D" parent="."]
 position = Vector2(300, 300)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(0.375, 0.375)
 
 [node name="InfoPanel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -210,12 +210,6 @@ custom_minimum_size = Vector2(185, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Item 3"
-
-[node name="Item4Button" type="Button" parent="ItemPanel/VBox/PaidContainer"]
-custom_minimum_size = Vector2(185, 100)
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "Item 4"
 
 [node name="FreeLabel" type="Label" parent="ItemPanel/VBox"]
 layout_mode = 2
