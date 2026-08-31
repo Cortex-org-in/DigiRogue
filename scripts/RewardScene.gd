@@ -42,6 +42,9 @@ extends Control
 
 @onready var continue_button    = $ContinueButton
 
+# Party summary label (created dynamically)
+var party_summary_label: Label
+
 # ── STATE ─────────────────────────────────────────────
 var paid_offers: Array = []   # 3 buyable items (heal / revive / SP)
 var free_offers: Array = []   # 3 free pick items
@@ -66,8 +69,34 @@ func _ready():
 	item6_button.pressed.connect(_on_item_chosen.bind(5))
 	reroll_button.pressed.connect(_on_reroll_pressed)
 
+	# Create party summary label dynamically
+	party_summary_label = Label.new()
+	party_summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	party_summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	party_summary_label.add_theme_font_size_override("font_size", 14)
+	party_summary_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+	# Position it below InfoPanel (which ends at y=-30 from bottom)
+	var summary_container = PanelContainer.new()
+	summary_container.name = "PartySummaryPanel"
+	summary_container.anchor_left = 0.0
+	summary_container.anchor_top = 1.0
+	summary_container.anchor_right = 0.4
+	summary_container.anchor_bottom = 1.0
+	summary_container.offset_left = 120.0
+	summary_container.offset_top = -520.0
+	summary_container.offset_right = 520.0
+	summary_container.offset_bottom = -310.0
+	summary_container.grow_vertical = 0
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.add_theme_constant_override("separation", 6)
+	summary_container.add_child(vbox)
+	vbox.add_child(party_summary_label)
+	add_child(summary_container)
+
 	_update_header()
 	_update_digimon_display()
+	_update_party_summary()
 
 	SaveData.refresh_rerolls()
 
@@ -103,6 +132,26 @@ func _update_digimon_display():
 	xp_bar.max_value = next_xp
 	xp_bar.value     = cur_xp
 	xp_label.text    = "XP  %d / %d" % [cur_xp, next_xp]
+
+func _update_party_summary():
+	var lines: PackedStringArray = []
+	lines.append("— Party Status —")
+	for d in SaveData.digimon_roster:
+		var name_str = d.get("name", "???")
+		var lvl = d.get("level", 1)
+		var cur_hp = d.get("current_hp", 0)
+		var max_hp = d.get("hp", 1)
+		var cur_xp = d.get("experience", 0)
+		var next_xp = SaveData.get_xp_for_level(lvl + 1)
+		var status = ""
+		if cur_hp <= 0:
+			status = " [FAINTED]"
+		elif d.get("status", "none") != "none":
+			status = " [%s]" % d.get("status", "").to_upper()
+		lines.append("%s  Lv.%d  HP %d/%d  XP %d/%d%s" % [
+			name_str, lvl, cur_hp, max_hp, cur_xp, next_xp, status
+		])
+	party_summary_label.text = "\n".join(lines)
 
 # ─────────────────────────────────────────────────────
 #  REWARD SEQUENCE
@@ -278,6 +327,7 @@ func _on_item_chosen(index: int):
 
 	await get_tree().create_timer(0.8).timeout
 	_update_digimon_display()
+	_update_party_summary()
 	_update_header()
 
 	# Once the free item is taken, move on to the next battle automatically

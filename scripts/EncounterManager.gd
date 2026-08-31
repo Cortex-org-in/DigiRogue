@@ -133,16 +133,16 @@ func spawn_boss(floor_num: int) -> Dictionary:
 
 func scale_enemy_for_floor(enemy: Dictionary, floor_num: int):
 	"""
-	Scale enemy stats based on floor_num number.
-	Each floor_num adds about 5% to base stats + level scaling.
+	Scale enemy stats based on floor number.
+	Enemies level up ~1 per floor to match player growth.
+	Stat multiplier is aggressive so enemies stay threatening.
 	"""
 	
-	# Level scaling: +1 level per 2 floors
-	var level_boost = int(floor_num / 2.0)
-	enemy["level"] = 1 + level_boost
+	# Level scaling: +1 level per floor (matches player growth rate)
+	enemy["level"] = max(1, floor_num)
 	
-	# Stat multiplier based on floor_num
-	var multiplier = 1.0 + (floor_num * 0.05)  # +5% per floor_num
+	# Stat multiplier: +10% per floor (compounds with level)
+	var multiplier = 1.0 + (floor_num * 0.10)
 	
 	enemy["hp"] = int(enemy["hp"] * multiplier)
 	enemy["attack"] = int(enemy["attack"] * multiplier)

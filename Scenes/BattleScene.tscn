@@ -91,7 +91,7 @@ script = ExtResource("1_12f34")
 
 [node name="Background" type="ColorRect" parent="."]
 offset_right = 1280.0
-offset_bottom = 520.0
+offset_bottom = 470.0
 color = Color(0.12, 0.14, 0.22, 1)
 
 [node name="EnemySandGround" type="Sprite2D" parent="."]
@@ -112,7 +112,7 @@ position = Vector2(150, -120)
 scale = Vector2(0.6, 0.6)
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
-position = Vector2(380, 430)
+position = Vector2(380, 400)
 scale = Vector2(2.5, 2.5)
 z_index = 2
 
@@ -155,9 +155,9 @@ text = "100 / 100"
 
 [node name="PlayerPanel" type="VBoxContainer" parent="UI"]
 offset_left = 900.0
-offset_top = 320.0
+offset_top = 300.0
 offset_right = 1260.0
-offset_bottom = 470.0
+offset_bottom = 450.0
 theme_override_constants/separation = 4
 
 [node name="PlayerName" type="Label" parent="UI/PlayerPanel"]
@@ -205,9 +205,9 @@ text = "SP 0 / 0"
 
 [node name="BattleBottomPanel" type="PanelContainer" parent="UI"]
 offset_left = 0.0
-offset_top = 500.0
+offset_top = 470.0
 offset_right = 1280.0
-offset_bottom = 700.0
+offset_bottom = 720.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="HBoxRoot" type="HBoxContainer" parent="UI/BattleBottomPanel"]
@@ -220,76 +220,98 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="MainActionPanel" type="GridContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 offset_left = 16.0
-offset_top = 16.0
-offset_right = 624.0
-offset_bottom = 184.0
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = -12.0
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
 columns = 2
+clip_contents = true
 
 [node name="FightButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 20
 text = "Fight"
 
 [node name="DigiviceButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 20
 text = "Digivice"
 
 [node name="RunButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 20
 text = "Run"
 
 [node name="DigimonButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MainActionPanel"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 20
 text = "Digimon"
 
 [node name="MovePanel" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
 visible = false
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 offset_left = 16.0
 offset_top = 8.0
-offset_right = 624.0
-offset_bottom = 192.0
-theme_override_constants/separation = 6
+offset_right = -16.0
+offset_bottom = -8.0
+theme_override_constants/separation = 4
+clip_contents = true
 
 [node name="MoveGrid" type="GridContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
 columns = 2
 
 [node name="Move1Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
-custom_minimum_size = Vector2(296, 76)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 15
-
-[node name="Move2Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 
-[node name="Move3Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
-custom_minimum_size = Vector2(296, 76)
+[node name="Move2Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 15
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+
+[node name="Move3Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
 
 [node name="Move4Button" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/MovePanel/MoveGrid"]
-custom_minimum_size = Vector2(296, 76)
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -297,12 +319,18 @@ theme_override_font_sizes/font_size = 15
 
 [node name="DigivicePanel" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel"]
 visible = false
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 offset_left = 16.0
 offset_top = 8.0
-offset_right = 624.0
-offset_bottom = 192.0
-theme_override_constants/separation = 10
+offset_right = -16.0
+offset_bottom = -8.0
+theme_override_constants/separation = 8
+clip_contents = true
 
 [node name="VBox" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel"]
 layout_mode = 2
@@ -311,7 +339,7 @@ theme_override_constants/separation = 2
 
 [node name="DigiviceTitle" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 14
 text = "Item Bag"
 
 [node name="TabBar" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
@@ -319,43 +347,44 @@ layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="TabAll" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "All"
 
 [node name="TabHeal" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Heal"
 
 [node name="TabSP" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "SP"
 
 [node name="TabStatus" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Status"
 
 [node name="TabBattle" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/TabBar"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Battle"
 
 [node name="ItemList" type="ScrollContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
-custom_minimum_size = Vector2(0, 90)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
 [node name="Grid" type="GridContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox/ItemList"]
@@ -367,25 +396,25 @@ theme_override_constants/v_separation = 4
 
 [node name="ScanLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Collection: 0 / 200%"
 
 [node name="CatchButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 12
 disabled = true
 text = "Catch"
 
 [node name="DigivolveButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel/VBox"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 12
 disabled = true
 text = "Digivolve (0%)"
 
 [node name="Sprite" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigivicePanel"]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 expand_mode = 1
@@ -403,15 +432,16 @@ offset_left = 16.0
 offset_top = 8.0
 offset_right = -16.0
 offset_bottom = -8.0
-theme_override_constants/separation = 4
+theme_override_constants/separation = 2
+clip_contents = true
 
 [node name="TopRow" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="DigimonSprite" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow"]
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -419,27 +449,27 @@ stretch_mode = 5
 [node name="RightVBox" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 1
+theme_override_constants/separation = 0
 
 [node name="DigimonStatsLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Stats..."
 
 [node name="TypeIcon" type="TextureRect" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(12, 12)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="DigimonMovesLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 8
 text = "Moves..."
 
 [node name="DigimonEvoLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/TopRow/RightVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 8
 text = "Evolution..."
 
 [node name="Separator1" type="HSeparator" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
@@ -448,11 +478,11 @@ layout_mode = 2
 [node name="PartyLabel" type="Label" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Party:"
 
 [node name="MemberScroll" type="ScrollContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 2
@@ -466,18 +496,6 @@ theme_override_constants/separation = 4
 [node name="Separator2" type="HSeparator" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
 layout_mode = 2
 
-[node name="ButtonRow" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel"]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 8
-
-[node name="SendOutButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/LeftPanel/DigimonPanel/ButtonRow"]
-custom_minimum_size = Vector2(140, 28)
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-disabled = true
-text = "Send Out"
-
 [node name="RightColumn" type="VBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot"]
 custom_minimum_size = Vector2(640, 200)
 layout_mode = 2
@@ -488,12 +506,25 @@ theme_override_constants/separation = 6
 layout_mode = 2
 theme_override_constants/margin_top = 12
 
-[node name="BackButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BackMargin"]
+[node name="HBox" type="HBoxContainer" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BackMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BackButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BackMargin/HBox"]
 custom_minimum_size = Vector2(200, 36)
 layout_mode = 2
 size_flags_horizontal = 2
 theme_override_font_sizes/font_size = 16
 text = "← Back"
+
+[node name="SendOutButton" type="Button" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn/BackMargin/HBox"]
+custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_font_sizes/font_size = 16
+disabled = true
+visible = false
+text = "Send Out"
 
 [node name="ScanDrop" type="Control" parent="UI/BattleBottomPanel/HBoxRoot/RightColumn"]
 custom_minimum_size = Vector2(0, 2)

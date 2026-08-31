@@ -188,9 +188,9 @@ func can_add_to_party(digimon: Dictionary) -> bool:
 # ─────────────────────────────────────────────────────
 
 func get_xp_multiplier_for_level(level: int) -> int:
-	"""XP gain multiplier based on the Digimon's current level."""
+	"""Scale XP gain so leveling isn't too fast early on."""
 	if level <= 10:
-		return 15   # levels 1-10: 15x exp (very fast early game)
+		return 15   # levels 1-10: 15x exp (fast early game)
 	elif level <= 20:
 		return 13   # levels 11-20: 13x exp
 	else:
