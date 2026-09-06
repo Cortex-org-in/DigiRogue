@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DigiRogue</title>
+
+	<!-- Firebase SDK (loaded before engine) -->
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+	<script>
+		firebase.initializeApp({
+			apiKey: "AIzaSyBmm8PM3-irYwoS5HPMZY_BbWV3A3JLkOc",
+			authDomain: "fir-1-82a66.firebaseapp.com",
+			projectId: "fir-1-82a66",
+			storageBucket: "fir-1-82a66.firebasestorage.app",
+			messagingSenderId: "888598195261",
+			appId: "1:888598195261:web:8067ac0fdeae09d7528e54"
+		});
+		window.firebaseAuth = firebase.auth();
+		window.firebaseDB = firebase.firestore();
+
+		window.googleLogin = function() {
+			var provider = new firebase.auth.GoogleAuthProvider();
+			return window.firebaseAuth.signInWithPopup(provider)
+				.then(function(r) { return { uid: r.user.uid, email: r.user.email, displayName: r.user.displayName }; })
+				.catch(function(e) { return { error: e.message }; });
+		};
+		window.firebaseLogout = function() { return window.firebaseAuth.signOut(); };
+		window.getCurrentUser = function() {
+			var u = window.firebaseAuth.currentUser;
+			return JSON.stringify(u ? { uid: u.uid, email: u.email, displayName: u.displayName } : null);
+		};
+		window.firestoreSave = function(uid, data) {
+			return window.firebaseDB.collection("users").doc(uid).set(data, { merge: true })
+				.then(function() { return { ok: true }; })
+				.catch(function(e) { return { ok: false, error: e.message }; });
+		};
+		window.firestoreLoad = function(uid) {
+			return window.firebaseDB.collection("users").doc(uid).get()
+				.then(function(d) { return d.exists ? { ok: true, data: d.data() } : { ok: false }; })
+				.catch(function(e) { return { ok: false, error: e.message }; });
+		};
+	</script>
+
+	<style>
+		* { margin: 0; padding: 0; }
+		html, body { width: 100%; height: 100%; overflow: hidden; background: #0D0D1E; }
+		canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+	</style>
+
+	{GODOT_HEAD}
+	<link id="-gd-engine-icon" rel="icon" type="image/png" href="data:image/png;base64,{GODOT_ICON}"/>
+</head>
+<body>
+	<canvas id="canvas">
+		<div style="vertical-align: top; display: table-cell; text-align: center; width: 100%; height: 100%; overflow: hidden; background-color: #0D0D1E; color: #AABBCC;">
+			<div style="display: table-cell; vertical-align: middle; max-width: 600px; padding: 20px;">
+				<p style="color: #AABBCC;">Loading...</p>
+			</div>
+		</div>
+	</canvas>
+
+	<script>{GODOT_BODY}</script>
+	<script>
+		function getBasePath() {
+			if (typeof engine !== "undefined") {
+				return engine.basePath;
+			}
+			return "";
+		}
+
+		function displayDownload(label, current, total) {
+			var progress = current / total;
+			var pct = Math.round(progress * 100);
+			var down = (current / (1024 * 1024)).toFixed(2);
+			var tot = (total / (1024 * 1024)).toFixed(2);
+
+			var canvas = document.getElementById("canvas");
+			var status = document.getElementById("-gd-engine-loading");
+			if (!status) {
+				status = document.createElement("div");
+				status.id = "-gd-engine-loading";
+				canvas.parentElement.appendChild(status);
+			}
+			status.innerHTML = "<br>" + label + " " + pct + "%<br><small>" + down + " MiB / " + tot + " MiB</small>";
+		}
+
+		function displayFailureNotice(err) {
+			var msg = document.createElement("div");
+			msg.style.cssText = "margin: 50px; padding: 20px; color: #C0392B; font-family: monospace;";
+			msg.innerHTML = "<h2>Failed to load the engine</h2><p>" + err + "</p>";
+			document.body.appendChild(msg);
+			document.getElementById("canvas").style.display = "none";
+		}
+
+		function checkBrowserSupport() {
+			var missing = [];
+			if (typeof SharedArrayBuffer === "undefined") missing.push("SharedArrayBuffer");
+			if (typeof WebAssembly === "undefined") missing.push("WebAssembly");
+			if (missing.length > 0) {
+				displayFailureNotice("Your browser is missing required features: " + missing.join(", ") + ". Please use a modern browser.");
+				return false;
+			}
+			return true;
+		}
+
+		if (checkBrowserSupport()) {
+			var basePath = getBasePath();
+			if (typeof Engine !== "undefined") {
+				new Engine(basePath).start("canvas", "GODOT.WASM", "GODOT.PCK").then(function(e) {
+					engine = e;
+				}).catch(function(err) {
+					displayFailureNotice(err);
+				});
+			}
+		}
+	</script>
+</body>
+</html>

@@ -16,6 +16,7 @@ var run_start_time = 0
 var current_digimon = {}
 var digimon_roster = []  # party — full digimon dicts, max 6
 var guest_roster = []    # guests from door events, max 4
+var storage_roster = []  # PC storage for overflow digimon
 
 # ── INVENTORY ────────────────────────────────────────
 var items = []  # items collected this run
@@ -32,6 +33,7 @@ const COLLECTION_MAX = 200
 const MAX_PARTY_SIZE = 6   # max Digimon kept in your fighting party
 const MAX_GUEST_SIZE = 4   # max guest Digimon from door events
 const MAX_CAPACITY = 20    # total party capacity
+const MAX_STORAGE = 30     # max Digimon in PC storage
 var party_capacity = 0      # current used capacity
 var digimon_collection = {}  # { name: 0-200 }
 var last_defeated_enemy = ""
@@ -116,6 +118,7 @@ func start_new_run(starter_names: Array):
 	digimon_collection = {}
 	digimon_roster = []
 	guest_roster = []
+	storage_roster = []
 	party_capacity = 0
 	last_defeated_enemy = ""
 	rerolls_left = REROLLS_PER_SEGMENT
@@ -299,7 +302,7 @@ func is_caught(enemy_name: String) -> bool:
 	return false
 
 func catch_digimon(enemy_name: String) -> bool:
-	"""Add a fully scanned Digimon to the party. Returns true if newly caught."""
+	"""Add a fully scanned Digimon to the party (or storage if party is full). Returns true if caught."""
 	if enemy_name == "" or not can_catch(enemy_name):
 		return false
 	if is_caught(enemy_name):
@@ -307,8 +310,6 @@ func catch_digimon(enemy_name: String) -> bool:
 	var d = DigimonDB.get_digimon(enemy_name)
 	if d.is_empty():
 		return false
-	if not can_add_to_party(d):
-		return false  # not enough capacity
 	if GachaData.has_digimon(enemy_name):
 		GachaData.apply_to_digimon(d)
 	d["level"]      = current_digimon.get("level", 1)
@@ -317,10 +318,19 @@ func catch_digimon(enemy_name: String) -> bool:
 	d["status"]     = "none"
 	DigimonDB.recompute_sp(d)
 	d["current_sp"] = d["sp"]
-	digimon_roster.append(d)
-	party_capacity += get_capacity_cost(d)
-	print("[SaveData] %s joined your party! (Capacity: %d/%d)" % [enemy_name, party_capacity, MAX_CAPACITY])
-	return true
+	# Try to add to party first
+	if can_add_to_party(d):
+		digimon_roster.append(d)
+		party_capacity += get_capacity_cost(d)
+		print("[SaveData] %s joined your party! (Capacity: %d/%d)" % [enemy_name, party_capacity, MAX_CAPACITY])
+		return true
+	# Party full — send to storage instead
+	if storage_roster.size() < MAX_STORAGE:
+		storage_roster.append(d)
+		print("[SaveData] %s sent to PC storage! (%d/%d)" % [enemy_name, storage_roster.size(), MAX_STORAGE])
+		return true
+	print("[SaveData] Could not catch %s — party and storage both full!" % enemy_name)
+	return false
 
 func get_caught_count() -> int:
 	return digimon_roster.size()
@@ -346,6 +356,82 @@ func get_guest_names() -> Array:
 	for d in guest_roster:
 		names.append(d.get("name", "?"))
 	return names
+
+# ─────────────────────────────────────────────────────
+#  PC STORAGE
+#  Send excess party digimon to storage; swap in/out
+# ─────────────────────────────────────────────────────
+
+func get_storage_count() -> int:
+	return storage_roster.size()
+
+func send_to_storage(index: int) -> bool:
+	"""Send a party digimon (by index) to storage. Can't send the active digimon."""
+	if index < 0 or index >= digimon_roster.size():
+		return false
+	if storage_roster.size() >= MAX_STORAGE:
+		return false
+	var d = digimon_roster[index]
+	if d.get("name", "") == current_digimon.get("name", ""):
+		return false  # can't store the active digimon
+	var cost = get_capacity_cost(d)
+	digimon_roster.remove_at(index)
+	party_capacity -= cost
+	storage_roster.append(d)
+	return true
+
+func withdraw_from_storage(storage_index: int) -> bool:
+	"""Pull a digimon from storage into the party. Returns false if party is full."""
+	if storage_index < 0 or storage_index >= storage_roster.size():
+		return false
+	var d = storage_roster[storage_index]
+	var cost = get_capacity_cost(d)
+	if party_capacity + cost > MAX_CAPACITY:
+		return false
+	storage_roster.remove_at(storage_index)
+	party_capacity += cost
+	digimon_roster.append(d)
+	return true
+
+func swap_with_storage(storage_index: int, party_index: int) -> bool:
+	"""Swap a party digimon with a storage digimon."""
+	if storage_index < 0 or storage_index >= storage_roster.size():
+		return false
+	if party_index < 0 or party_index >= digimon_roster.size():
+		return false
+	var party_d = digimon_roster[party_index]
+	var storage_d = storage_roster[storage_index]
+	if party_d.get("name", "") == current_digimon.get("name", ""):
+		return false  # can't swap out the active digimon
+	var party_cost = get_capacity_cost(party_d)
+	var storage_cost = get_capacity_cost(storage_d)
+	# Check capacity fit
+	var new_capacity = party_capacity - party_cost + storage_cost
+	if new_capacity > MAX_CAPACITY:
+		return false
+	party_capacity = new_capacity
+	digimon_roster[party_index] = storage_d
+	storage_roster[storage_index] = party_d
+	return true
+
+func get_storage_names() -> Array:
+	var names = []
+	for d in storage_roster:
+		names.append(d.get("name", "?"))
+	return names
+
+func withdraw_guest_to_party(guest_index: int) -> bool:
+	"""Move a guest from guest_roster into the party."""
+	if guest_index < 0 or guest_index >= guest_roster.size():
+		return false
+	var g = guest_roster[guest_index]
+	var cost = get_capacity_cost(g)
+	if party_capacity + cost > MAX_CAPACITY:
+		return false
+	guest_roster.remove_at(guest_index)
+	party_capacity += cost
+	digimon_roster.append(g)
+	return true
 
 # ─────────────────────────────────────────────────────
 #  REWARD REROLLS (3 per 10-level segment)

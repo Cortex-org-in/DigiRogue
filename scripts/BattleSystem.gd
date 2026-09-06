@@ -63,7 +63,7 @@ func calculate_damage(attacker: Dictionary, defender: Dictionary, move_name: Str
 	# Base damage formula: (2 * level / 5 + 2) * power * (attack / defense) / 50 + 2
 	# Damage multiplied by 10 globally (player AND enemy) for faster, punchier battles
 	var level = attacker.get("level", 1)
-	var damage = int((2.0 * level / 5.0 + 2.0) * base_power * attack_stat / defense_stat / 50.0 + 2.0) * 10
+	var damage = int((2.0 * level / 5.0 + 2.0) * base_power * attack_stat / defense_stat / 50.0 + 2.0) * 12
 	
 	# ── TYPE ADVANTAGE ─────────────────────────────────
 	var type_multiplier = DigimonDB.get_type_multiplier(move["type"], defender["type"])

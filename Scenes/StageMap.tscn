@@ -64,7 +64,7 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
 text = "Tickets: 0"
 
-[node name="ScanLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer"]
+[node name="ScanLabel" type="Label" parent="HUD/HUDPanel/HBoxContainer" unique_id=1174660380]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
@@ -223,7 +223,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Leave Training Ground"
 
-[node name="ShopPanel" type="PanelContainer" parent="."]
+[node name="ShopPanel" type="PanelContainer" parent="." unique_id=720650529]
 visible = false
 z_index = 20
 layout_mode = 1
@@ -239,28 +239,156 @@ offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ShopPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ShopPanel" unique_id=557675789]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="ShopTitle" type="Label" parent="ShopPanel/VBoxContainer"]
+[node name="ShopTitle" type="Label" parent="ShopPanel/VBoxContainer" unique_id=1568157825]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Lucky! A Shop!"
 horizontal_alignment = 1
 
-[node name="ShopGoldLabel" type="Label" parent="ShopPanel/VBoxContainer"]
+[node name="ShopGoldLabel" type="Label" parent="ShopPanel/VBoxContainer" unique_id=2008406522]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Tickets: 0   |   Digi: 0"
 horizontal_alignment = 1
 
-[node name="ShopList" type="VBoxContainer" parent="ShopPanel/VBoxContainer"]
+[node name="ShopList" type="VBoxContainer" parent="ShopPanel/VBoxContainer" unique_id=964298633]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="LeaveShopButton" type="Button" parent="ShopPanel/VBoxContainer"]
+[node name="LeaveShopButton" type="Button" parent="ShopPanel/VBoxContainer" unique_id=979241051]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Leave Shop"
+
+[node name="SwapPromptPanel" type="PanelContainer" parent="." unique_id=2006335464]
+visible = false
+z_index = 25
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -140.0
+offset_right = 280.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SwapPromptPanel" unique_id=386012706]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PromptLabel" type="Label" parent="SwapPromptPanel/VBoxContainer" unique_id=900630552]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Do you want to send any Digimon to storage?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SwapPromptPanel/VBoxContainer" unique_id=138713945]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="YesButton" type="Button" parent="SwapPromptPanel/VBoxContainer/HBoxContainer" unique_id=205846326]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Yes"
+
+[node name="NoButton" type="Button" parent="SwapPromptPanel/VBoxContainer/HBoxContainer" unique_id=716302479]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "No"
+
+[node name="PickPartyPanel" type="PanelContainer" parent="." unique_id=1234887296]
+visible = false
+z_index = 25
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -220.0
+offset_right = 280.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PickPartyPanel" unique_id=2020536447]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="PickPartyPanel/VBoxContainer" unique_id=2112774139]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Pick a party member to send to storage:"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PickPartyPanel/VBoxContainer" unique_id=677689448]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="List" type="VBoxContainer" parent="PickPartyPanel/VBoxContainer/ScrollContainer" unique_id=1152990345]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="CancelButton" type="Button" parent="PickPartyPanel/VBoxContainer" unique_id=1511769398]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Cancel"
+
+[node name="GuestSwapPanel" type="PanelContainer" parent="." unique_id=2063225680]
+visible = false
+z_index = 25
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -220.0
+offset_right = 280.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GuestSwapPanel" unique_id=1816104143]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="GuestSwapPanel/VBoxContainer" unique_id=626329244]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Bring a guest into your party?"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GuestSwapPanel/VBoxContainer" unique_id=851208253]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="List" type="VBoxContainer" parent="GuestSwapPanel/VBoxContainer/ScrollContainer" unique_id=490507620]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SkipButton" type="Button" parent="GuestSwapPanel/VBoxContainer" unique_id=379482165]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Skip"

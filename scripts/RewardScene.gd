@@ -18,6 +18,7 @@ extends Control
 @onready var free_item_label    = $FreeItemLabel
 
 @onready var digimon_sprite     = $DigimonSprite
+@onready var info_panel         = $InfoPanel
 @onready var digimon_name_label = $InfoPanel/VBox/DigimonName
 @onready var digimon_level_label= $InfoPanel/VBox/DigimonLevel
 @onready var digimon_type_label = $InfoPanel/VBox/DigimonType
@@ -41,6 +42,12 @@ extends Control
 @onready var reroll_button      = $ItemPanel/VBox/BottomRow/RerollButton
 
 @onready var continue_button    = $ContinueButton
+@onready var pc_button           = $HeaderPanel/HeaderHBox/PCButton
+
+@onready var storage30_panel     = $StoragePanel30
+@onready var storage30_grid      = $StoragePanel30/VBoxContainer/ScrollContainer/Grid
+@onready var storage30_info      = $StoragePanel30/VBoxContainer/InfoLabel
+@onready var storage30_close     = $StoragePanel30/VBoxContainer/CloseButton
 
 # Party summary label (created dynamically)
 var party_summary_label: Label
@@ -50,6 +57,7 @@ var paid_offers: Array = []   # 3 buyable items (heal / revive / SP)
 var free_offers: Array = []   # 3 free pick items
 var paid_chosen: bool  = false
 var free_chosen: bool  = false
+var _selected_storage_index: int = -1  # which storage digimon to send to party
 
 # ─────────────────────────────────────────────────────
 #  READY
@@ -59,6 +67,7 @@ func _ready():
 	level_up_panel.visible  = false
 	item_panel.visible      = false
 	continue_button.visible = false
+	storage30_panel.visible = false
 	free_item_label.text    = ""
 
 	item1_button.pressed.connect(_on_item_chosen.bind(0))
@@ -68,6 +77,8 @@ func _ready():
 	item5_button.pressed.connect(_on_item_chosen.bind(4))
 	item6_button.pressed.connect(_on_item_chosen.bind(5))
 	reroll_button.pressed.connect(_on_reroll_pressed)
+	pc_button.gui_input.connect(_on_pc_button_input)
+	storage30_close.pressed.connect(_on_storage30_close)
 
 	# Create party summary label dynamically
 	party_summary_label = Label.new()
@@ -93,6 +104,7 @@ func _ready():
 	summary_container.add_child(vbox)
 	vbox.add_child(party_summary_label)
 	add_child(summary_container)
+	summary_container.visible = false
 
 	_update_header()
 	_update_digimon_display()
@@ -118,6 +130,7 @@ func _update_digimon_display():
 	var sprite_path = d.get("sprite", "")
 	if sprite_path != "" and ResourceLoader.exists(sprite_path):
 		digimon_sprite.texture = load(sprite_path)
+		_fit_sprite(digimon_sprite, 300.0, 360.0)
 
 	digimon_name_label.text  = d.get("name", "???")
 	digimon_level_label.text = "Level %d" % d.get("level", 1)
@@ -163,12 +176,25 @@ func _play_reward_sequence():
 	await _animate_label_in(result_label)
 	await get_tree().create_timer(1.0).timeout
 
+	# Show partner info and party summary
+	result_label.visible = false
+	info_panel.visible = true
+	var party_panel = get_node_or_null("PartySummaryPanel")
+	if party_panel:
+		party_panel.visible = true
+	await get_tree().create_timer(1.5).timeout
+
 	# Level up display (only if the partner actually leveled this battle)
 	var d = SaveData.current_digimon
 	if d.get("level", 1) > SaveData.last_battle_old_level:
 		await _show_level_up_info()
 
 	await get_tree().create_timer(0.5).timeout
+
+	# Hide partner info before showing items
+	info_panel.visible = false
+	if party_panel:
+		party_panel.visible = false
 	await _show_item_choice()
 
 func _show_level_up_info():
@@ -306,6 +332,7 @@ func _on_item_chosen(index: int):
 			item.get("name", item_name),
 			item.get("description", "")
 		]
+		free_item_label.visible = true
 		free_chosen = true
 
 	# Add to inventory (Ticket auto-converts into gacha tickets)
@@ -347,3 +374,164 @@ func _animate_label_in(label: Label):
 	var tween = create_tween()
 	tween.tween_property(label, "modulate", Color(1, 1, 1, 1), 0.5)
 	await get_tree().create_timer(0.5).timeout
+
+func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float):
+	if sprite.texture == null:
+		return
+	var tex_size = sprite.texture.get_size()
+	var scale_x = max_w / tex_size.x
+	var scale_y = max_h / tex_size.y
+	var fit_scale = min(scale_x, scale_y)
+	sprite.scale = Vector2(fit_scale, fit_scale)
+	sprite.position = Vector2(300, 300)
+
+# ─────────────────────────────────────────────────────
+#  PC STORAGE — 30-slot grid → 6-slot party grid
+# ─────────────────────────────────────────────────────
+
+func _on_pc_button_input(event: InputEvent):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_open_storage30()
+
+func _open_storage30():
+	storage30_panel.visible = true
+	storage30_info.text = "Storage: %d/%d" % [SaveData.storage_roster.size(), SaveData.MAX_STORAGE]
+	# Clear grid
+	for child in storage30_grid.get_children():
+		child.queue_free()
+	# Populate grid with storage digimon
+	for i in range(SaveData.storage_roster.size()):
+		var d = SaveData.storage_roster[i]
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(100, 50)
+		btn.add_theme_font_size_override("font_size", 12)
+		var sprite_path = d.get("sprite", "")
+		btn.text = "%s\nLv.%d" % [d.get("name", "???"), d.get("level", 1)]
+		btn.pressed.connect(_on_storage30_digimon_pressed.bind(i))
+		storage30_grid.add_child(btn)
+	if SaveData.storage_roster.is_empty():
+		var lbl = Label.new()
+		lbl.text = "Storage is empty."
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 14)
+		storage30_grid.add_child(lbl)
+
+func _on_storage30_close():
+	storage30_panel.visible = false
+
+func _on_storage30_digimon_pressed(storage_index: int):
+	_selected_storage_index = storage_index
+	storage30_panel.visible = false
+	# Open custom party grid
+	_open_party_grid()
+
+func _open_party_grid():
+	var panel = PanelContainer.new()
+	panel.name = "PartyGridPopup"
+	panel.z_index = 25
+	panel.anchor_left = 0.5
+	panel.anchor_top = 0.5
+	panel.anchor_right = 0.5
+	panel.anchor_bottom = 0.5
+	panel.offset_left = -180
+	panel.offset_top = -220
+	panel.offset_right = 180
+	panel.offset_bottom = 220
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.add_theme_constant_override("separation", 10)
+	panel.add_child(vbox)
+
+	var title = Label.new()
+	title.text = "Send to Party"
+	title.add_theme_font_size_override("font_size", 18)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var info = Label.new()
+	info.text = "Storage: %d → Party (Cap: %d/%d)" % [
+		SaveData.storage_roster.size(),
+		SaveData.party_capacity,
+		SaveData.MAX_CAPACITY
+	]
+	info.add_theme_font_size_override("font_size", 12)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(info)
+
+	# 2x3 grid of party slots
+	var grid = GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 8)
+	vbox.add_child(grid)
+
+	for i in range(6):
+		var slot_panel = PanelContainer.new()
+		slot_panel.custom_minimum_size = Vector2(150, 70)
+		grid.add_child(slot_panel)
+
+		var slot_vbox = VBoxContainer.new()
+		slot_vbox.add_theme_constant_override("separation", 2)
+		slot_panel.add_child(slot_vbox)
+
+		if i < SaveData.digimon_roster.size():
+			var d = SaveData.digimon_roster[i]
+			var is_active = d.get("name", "") == SaveData.current_digimon.get("name", "")
+			var name_lbl = Label.new()
+			name_lbl.text = "%s Lv.%d" % [d.get("name", "???"), d.get("level", 1)]
+			name_lbl.add_theme_font_size_override("font_size", 12)
+			if is_active:
+				name_lbl.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+			slot_vbox.add_child(name_lbl)
+
+			var hp_lbl = Label.new()
+			hp_lbl.text = "HP %d/%d" % [d.get("current_hp", 0), d.get("hp", 1)]
+			hp_lbl.add_theme_font_size_override("font_size", 10)
+			slot_vbox.add_child(hp_lbl)
+
+			if not is_active:
+				var btn = Button.new()
+				btn.text = "Send Here"
+				btn.add_theme_font_size_override("font_size", 11)
+				btn.pressed.connect(_on_party_grid_send.bind(i, panel))
+				slot_vbox.add_child(btn)
+			else:
+				var lbl = Label.new()
+				lbl.text = "[In Battle]"
+				lbl.add_theme_font_size_override("font_size", 10)
+				lbl.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+				slot_vbox.add_child(lbl)
+		else:
+			var empty_lbl = Label.new()
+			empty_lbl.text = "Empty Slot"
+			empty_lbl.add_theme_font_size_override("font_size", 11)
+			empty_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			slot_vbox.add_child(empty_lbl)
+
+	# Back button
+	var back_btn = Button.new()
+	back_btn.text = "Back"
+	back_btn.custom_minimum_size = Vector2(0, 36)
+	back_btn.add_theme_font_size_override("font_size", 14)
+	back_btn.pressed.connect(func(): panel.queue_free(); _selected_storage_index = -1)
+	vbox.add_child(back_btn)
+
+func _on_party_grid_send(party_index: int, panel: PanelContainer):
+	if _selected_storage_index < 0 or _selected_storage_index >= SaveData.storage_roster.size():
+		return
+	var d = SaveData.storage_roster[_selected_storage_index]
+	var cost = SaveData.get_capacity_cost(d)
+	if SaveData.party_capacity + cost > SaveData.MAX_CAPACITY:
+		# Can't fit — show brief message
+		return
+	SaveData.storage_roster.remove_at(_selected_storage_index)
+	SaveData.party_capacity += cost
+	SaveData.digimon_roster.append(d)
+	_selected_storage_index = -1
+	panel.queue_free()
+	# Refresh the 30-slot list if it was open
+	_open_storage30()

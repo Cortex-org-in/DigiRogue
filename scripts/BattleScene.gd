@@ -11,13 +11,15 @@ enum BattleMenu { MAIN, FIGHT, DIGIVICE, DIGIMON }
 # ── NODE REFERENCES ──────────────────────────────────
 @onready var background        = $Background
 
-@onready var enemy_name_label  = $UI/EnemyPanel/EnemyName
+@onready var enemy_name_label  = $UI/EnemyPanel/NameRow/EnemyName
 @onready var enemy_level_label = $UI/EnemyPanel/EnemyLevel
 @onready var enemy_hp_bar      = $UI/EnemyPanel/EnemyHPBar
 @onready var enemy_hp_label    = $UI/EnemyPanel/EnemyHPLabel
+@onready var enemy_type_icon   = $UI/EnemyPanel/NameRow/TypeIcon
+@onready var enemy_status_icon = $UI/EnemyPanel/NameRow/StatusIcon
 @onready var enemy_sprite      = $EnemySprite
 
-@onready var player_name_label  = $UI/PlayerPanel/PlayerName
+@onready var player_name_label  = $UI/PlayerPanel/NameRow/PlayerName
 @onready var player_level_label = $UI/PlayerPanel/PlayerLevel
 @onready var player_hp_bar      = $UI/PlayerPanel/PlayerHPBar
 @onready var player_hp_label    = $UI/PlayerPanel/PlayerHPLabel
@@ -27,8 +29,8 @@ enum BattleMenu { MAIN, FIGHT, DIGIVICE, DIGIMON }
 @onready var scan_mini_bar      = $UI/BattleBottomPanel/HBoxRoot/RightColumn/ScanBox/ScanTopBar
 @onready var scan_mini_label    = $UI/BattleBottomPanel/HBoxRoot/RightColumn/ScanBox/ScanTopLabel
 @onready var player_sprite      = $PlayerSprite
-@onready var enemy_status_icon  = $EnemySprite/StatusIcon
-@onready var player_status_icon = $PlayerSprite/StatusIcon
+@onready var player_type_icon   = $UI/PlayerPanel/NameRow/TypeIcon
+@onready var player_status_icon = $UI/PlayerPanel/NameRow/StatusIcon
 @onready var enemy_sand_ground  = $EnemySandGround
 @onready var player_sand_ground = $PlayerSandGround
 
@@ -43,14 +45,23 @@ const STATUS_ICONS = {
 	"confuse":   "res://assets/Party and Status/statusPKRS.png",
 }
 
-func _apply_status_icon(icon: Sprite2D, status: String):
+func _apply_status_icon_rect(tex: TextureRect, status: String):
 	var path = STATUS_ICONS.get(status, "")
-	if path != "" and ResourceLoader.exists(path):
-		icon.texture = load(path)
-		icon.visible = true
+	if status != "none" and path != "" and ResourceLoader.exists(path):
+		tex.texture = load(path)
+		tex.visible = true
 	else:
-		icon.texture = null
-		icon.visible = false
+		tex.texture = null
+		tex.visible = false
+
+func _apply_type_icon(tex: TextureRect, digimon_type: String):
+	var path = TYPE_ICONS.get(digimon_type, "")
+	if path != "" and ResourceLoader.exists(path):
+		tex.texture = load(path)
+		tex.visible = true
+	else:
+		tex.texture = null
+		tex.visible = false
 
 # Type icon paths
 const TYPE_ICONS = {
@@ -58,9 +69,6 @@ const TYPE_ICONS = {
 	"virus":   "res://assets/type_icons/virus.png",
 	"data":    "res://assets/type_icons/data.png",
 }
-
-func _get_type_text(type: String) -> String:
-	return "[%s]" % type.to_upper()
 
 @onready var log_label         = $UI/BattleBottomPanel/HBoxRoot/RightColumn/BattleLog/LogLabel
 
@@ -501,7 +509,6 @@ func _on_send_out_pressed():
 	var old_name = player_digimon.get("name", "???")
 	SaveData.current_digimon = selected
 	player_digimon = selected
-	var cutout_shader = load("res://assets/sprites/cutout.gdshader")
 	var p_back_path = player_digimon.get("sprite_back", "")
 	var p_front_path = player_digimon.get("sprite", "")
 	if p_back_path != "" and ResourceLoader.exists(p_back_path):
@@ -509,7 +516,6 @@ func _on_send_out_pressed():
 	elif p_front_path != "" and ResourceLoader.exists(p_front_path):
 		player_sprite.texture = load(p_front_path)
 		player_sprite.flip_h = true
-	_apply_cutout_shader(player_sprite, cutout_shader)
 	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
 	_update_player_ui()
 	_add_log("%s, come back!" % old_name)
@@ -583,15 +589,15 @@ func _update_scan_display():
 
 func _get_background_for_floor(floor_num: int) -> String:
 	if floor_num <= 10:
-		return "res://assets/background/beach_1280x460.png"
+		return "res://assets/background/beach.png"
 	elif floor_num <= 20:
-		return "res://assets/background/plains_1280x460.png"
+		return "res://assets/background/plains.png"
 	elif floor_num <= 30:
-		return "res://assets/background/bw_forest_1280x460.png"
+		return "res://assets/background/forest.png"
 	elif floor_num <= 40:
-		return "res://assets/background/castle_1280x460.png"
+		return "res://assets/background/castle.png"
 	else:
-		return "res://assets/background/hell_1280x460.png"
+		return "res://assets/background/hell.png"
 
 func _load_background():
 	var bg_path = _get_background_for_floor(SaveData.floor_number)
@@ -610,8 +616,6 @@ func _load_background():
 			background.add_child(tex_rect)
 
 func _setup_ui():
-	var cutout_shader = load("res://assets/sprites/cutout.gdshader")
-
 	var p_back_path = player_digimon.get("sprite_back", "")
 	var p_front_path = player_digimon.get("sprite", "")
 	if p_back_path != "" and ResourceLoader.exists(p_back_path):
@@ -622,7 +626,6 @@ func _setup_ui():
 	else:
 		_set_placeholder_sprite(player_sprite, Color(1.0, 0.4, 0.1))
 
-	_apply_cutout_shader(player_sprite, cutout_shader)
 	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
 
 	var e_sprite_path = enemy_digimon.get("sprite", "")
@@ -630,43 +633,86 @@ func _setup_ui():
 		enemy_sprite.texture = load(e_sprite_path)
 	else:
 		_set_placeholder_sprite(enemy_sprite, Color(0.3, 0.5, 1.0))
-
-	_apply_cutout_shader(enemy_sprite, cutout_shader)
-	var e_max_w = 240.0
+	var e_max_w = 280.0
 	var e_max_h = 260.0
+	var e_stretch = 1.15
 	if enemy_digimon.get("name", "") == "Agumon":
-		e_max_w = 250.0
+		e_max_w = 290.0
 		e_max_h = 270.0
-	_fit_sprite(enemy_sprite, e_max_w, e_max_h, enemy_digimon.get("stage", ""))
+	elif enemy_digimon.get("name", "") == "Devimon":
+		e_max_w = 320.0
+		e_max_h = 300.0
+		e_stretch = 1.25
+	_fit_sprite(enemy_sprite, e_max_w, e_max_h, enemy_digimon.get("stage", ""), e_stretch)
 	if enemy_digimon.get("name", "") == "Agumon":
 		enemy_sprite.position = Vector2(760, 260)
+
+	# Lower enemy + platform on plains background
+	var bg_path = _get_background_for_floor(SaveData.floor_number)
+	if bg_path == "res://assets/background/plains.png":
+		enemy_sprite.position.y += 60
 
 	enemy_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	player_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
-	# Position sand ground shadows at feet of each Digimon
-	var enemy_sand_path = "res://assets/enemybaseFieldSand2.png"
-	if enemy_digimon.get("name", "") == "Biyomon":
-		enemy_sand_path = "res://assets/background/biyomon_ground.png"
-	if ResourceLoader.exists(enemy_sand_path):
-		enemy_sand_ground.texture = load(enemy_sand_path)
+	# Pick platform based on background
+	var enemy_platform_path = "res://assets/enemybaseFieldSand2.png"
+	var player_platform_path = "res://assets/enemybaseFieldSand.png"
+	if bg_path == "res://assets/background/plains.png":
+		enemy_platform_path = "res://assets/Platform/enemybaseFairyTale.png"
+		player_platform_path = "res://assets/Platform/enemybaseFairyTale.png"
+	elif bg_path == "res://assets/background/forest.png":
+		enemy_platform_path = "res://assets/Platform/enemybaseForest.png"
+		player_platform_path = "res://assets/Platform/enemybaseForest.png"
+	elif bg_path == "res://assets/background/castle.png":
+		enemy_platform_path = "res://assets/Platform/enemybaseCityNew.png"
+		player_platform_path = "res://assets/Platform/enemybaseCityNew.png"
+	elif bg_path == "res://assets/background/hell.png":
+		enemy_platform_path = "res://assets/Platform/enemybaseBurning.png"
+		player_platform_path = "res://assets/Platform/enemybaseBurning.png"
+
+	# Position platforms at feet of each Digimon
+	if ResourceLoader.exists(enemy_platform_path):
+		enemy_sand_ground.texture = _make_outlined_sand(load(enemy_platform_path))
 	enemy_sand_ground.position = Vector2(enemy_sprite.position.x, enemy_sprite.position.y + 120)
 
-	var player_sand_path = "res://assets/enemybaseFieldSand.png"
-	if player_digimon.get("name", "") == "Biyomon":
-		player_sand_path = "res://assets/background/biyomon_ground.png"
-	if ResourceLoader.exists(player_sand_path):
-		player_sand_ground.texture = load(player_sand_path)
+	if ResourceLoader.exists(player_platform_path):
+		player_sand_ground.texture = _make_outlined_sand(load(player_platform_path))
 	player_sand_ground.position = Vector2(player_sprite.position.x, player_sprite.position.y + 200)
 
 	_update_move_buttons()
 
-func _apply_cutout_shader(sprite: Sprite2D, shader: Shader):
-	var mat = ShaderMaterial.new()
-	mat.shader = shader
-	sprite.material = mat
+func _make_outlined_sand(src_tex: Texture2D) -> Texture2D:
+	var img = src_tex.get_image()
+	var w = img.get_width()
+	var h = img.get_height()
+	var outline = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	outline.fill(Color(0, 0, 0, 0))
+	for y in range(h):
+		for x in range(w):
+			var c = img.get_pixel(x, y)
+			if c.a > 0.1:
+				outline.set_pixel(x, y, c)
+			else:
+				var found_edge = false
+				for dx in range(-1, 2):
+					for dy in range(-1, 2):
+						if dx == 0 and dy == 0:
+							continue
+						var nx = x + dx
+						var ny = y + dy
+						if nx >= 0 and nx < w and ny >= 0 and ny < h:
+							var neighbor = img.get_pixel(nx, ny)
+							if neighbor.a > 0.1:
+								found_edge = true
+								break
+					if found_edge:
+						break
+				if found_edge:
+					outline.set_pixel(x, y, Color(0.15, 0.12, 0.08, 1))
+	return ImageTexture.create_from_image(outline)
 
-func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = ""):
+func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = "", stretch_w: float = 1.0):
 	var tex = sprite.texture
 	if not tex:
 		return
@@ -676,7 +722,7 @@ func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = "
 	var scale_y = max_h / th
 	var s = minf(scale_x, scale_y)
 	s *= _get_stage_size_multiplier(stage)
-	sprite.scale = Vector2(s, s)
+	sprite.scale = Vector2(s * stretch_w, s)
 
 func _get_stage_size_multiplier(stage: String) -> float:
 	match stage:
@@ -715,9 +761,10 @@ func _update_all_ui():
 
 func _update_player_ui():
 	var p = player_digimon
-	var type_str = _get_type_text(p.get("type", ""))
-	player_name_label.text = "%s %s" % [p.get("name", "???"), type_str]
+	player_name_label.text = "%s" % p.get("name", "???")
 	player_level_label.text = "Lv %d" % p.get("level", 1)
+
+	_apply_type_icon(player_type_icon, p.get("type", ""))
 
 	var cur_hp  = p.get("current_hp", 0)
 	var max_hp  = p.get("hp", 1)
@@ -745,16 +792,14 @@ func _update_player_ui():
 		hp_fill.bg_color = Color(0.9, 0.2, 0.2)
 	player_hp_bar.add_theme_stylebox_override("fill", hp_fill)
 
-	var status = p.get("status", "none")
-	_apply_status_icon(player_status_icon, status)
-	if status != "none":
-		player_name_label.text = "%s %s [%s]" % [p.get("name", "???"), type_str, status.to_upper()]
+	_apply_status_icon_rect(player_status_icon, p.get("status", "none"))
 
 func _update_enemy_ui():
 	var e = enemy_digimon
-	var type_str = _get_type_text(e.get("type", ""))
-	enemy_name_label.text = "%s %s" % [e.get("name", "???"), type_str]
+	enemy_name_label.text = "%s" % e.get("name", "???")
 	enemy_level_label.text = "Lv %d" % e.get("level", 1)
+
+	_apply_type_icon(enemy_type_icon, e.get("type", ""))
 
 	var cur_hp = e.get("current_hp", 0)
 	var max_hp = e.get("hp", 1)
@@ -773,10 +818,7 @@ func _update_enemy_ui():
 		hp_fill.bg_color = Color(0.9, 0.2, 0.2)
 	enemy_hp_bar.add_theme_stylebox_override("fill", hp_fill)
 
-	var status = e.get("status", "none")
-	_apply_status_icon(enemy_status_icon, status)
-	if status != "none":
-		enemy_name_label.text = "%s %s [%s]" % [e.get("name", "???"), type_str, status.to_upper()]
+	_apply_status_icon_rect(enemy_status_icon, e.get("status", "none"))
 
 func _update_move_buttons():
 	var moves = player_digimon.get("moves", [])
@@ -1126,7 +1168,7 @@ func _player_attack(move_name: String):
 			await _check_player_fainted()
 			return
 
-	await _flash_sprite(player_sprite)
+	await _lunge_attack(player_sprite, enemy_sprite)
 	var result = BattleSystem.calculate_damage(player_digimon, enemy_digimon, move_name)
 
 	_add_log(result["description"])
@@ -1135,7 +1177,6 @@ func _player_attack(move_name: String):
 
 	if result["damage"] > 0:
 		enemy_digimon["current_hp"] = max(0, enemy_digimon["current_hp"] - result["damage"])
-		await _flash_sprite(enemy_sprite)
 		_update_enemy_ui()
 		_gain_battle_scan(randi_range(2, 5))
 
@@ -1178,7 +1219,7 @@ func _enemy_turn(enemy_move: String = ""):
 		enemy_move = BattleSystem.get_random_valid_enemy_move(enemy_digimon)
 	BattleSystem.use_move_sp(enemy_digimon, enemy_move)
 
-	await _flash_sprite(enemy_sprite)
+	await _lunge_attack(enemy_sprite, player_sprite)
 	var result = BattleSystem.calculate_damage(enemy_digimon, player_digimon, enemy_move)
 
 	_add_log(result["description"])
@@ -1188,7 +1229,6 @@ func _enemy_turn(enemy_move: String = ""):
 	if result["damage"] > 0:
 		player_digimon["current_hp"] = max(0, player_digimon["current_hp"] - result["damage"])
 		SaveData.current_digimon["current_hp"] = player_digimon["current_hp"]
-		await _flash_sprite(player_sprite)
 		_update_player_ui()
 
 	BattleSystem.apply_status_effect(enemy_digimon, player_digimon, enemy_move)
@@ -1334,7 +1374,6 @@ func _try_party_swap() -> bool:
 			continue
 		player_digimon = d
 		SaveData.current_digimon = d
-		var cutout_shader = load("res://assets/sprites/cutout.gdshader")
 		var p_back_path = player_digimon.get("sprite_back", "")
 		var p_front_path = player_digimon.get("sprite", "")
 		if p_back_path != "" and ResourceLoader.exists(p_back_path):
@@ -1342,7 +1381,6 @@ func _try_party_swap() -> bool:
 		elif p_front_path != "" and ResourceLoader.exists(p_front_path):
 			player_sprite.texture = load(p_front_path)
 			player_sprite.flip_h = true
-		_apply_cutout_shader(player_sprite, cutout_shader)
 		_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
 		_setup_ui()
 		_update_all_ui()
@@ -1447,3 +1485,21 @@ func _flash_sprite(sprite: Sprite2D):
 	tween.tween_property(sprite, "modulate", Color(2.0, 2.0, 2.0), 0.1)
 	tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0), 0.1)
 	await get_tree().create_timer(0.4).timeout
+
+func _lunge_attack(attacker: Sprite2D, target: Sprite2D):
+	var original_pos = attacker.position
+	var dir = (target.position - original_pos).normalized()
+	var lunge_dist = original_pos.distance_to(target.position) * 0.45
+	var target_pos = original_pos + dir * lunge_dist
+
+	var tween = create_tween()
+	tween.tween_property(attacker, "position", target_pos, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(attacker, "scale", Vector2(attacker.scale.x * 1.1, attacker.scale.y * 1.1), 0.08)
+	tween.tween_property(attacker, "scale", Vector2(attacker.scale.x, attacker.scale.y), 0.08)
+	await tween.finished
+
+	await _flash_sprite(target)
+
+	var return_tween = create_tween()
+	return_tween.tween_property(attacker, "position", original_pos, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await return_tween.finished

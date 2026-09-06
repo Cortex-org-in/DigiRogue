@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dhltdvd8278w3"]
 
 [ext_resource type="Script" uid="uid://d1tftjucvqgk1" path="res://scripts/RewardScene.gd" id="1_olepc"]
+[ext_resource type="Texture2D" path="res://assets/Storage/pc_icon.png" id="storage_bg"]
 
 [node name="RewardsScene" type="Control"]
 layout_mode = 3
@@ -50,7 +51,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Digi: 0"
 
+[node name="PCButton" type="TextureRect" parent="HeaderPanel/HeaderHBox"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("storage_bg")
+stretch_mode = 5
+expand_mode = 3
+mouse_filter = 0
+
 [node name="ResultLabel" type="Label" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -65,6 +75,7 @@ text = "Victory!"
 horizontal_alignment = 1
 
 [node name="FreeItemLabel" type="Label" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -84,6 +95,7 @@ position = Vector2(300, 300)
 scale = Vector2(0.375, 0.375)
 
 [node name="InfoPanel" type="PanelContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -273,3 +285,53 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 18
 text = "Continue"
+
+[node name="StoragePanel30" type="PanelContainer" parent="."]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -280.0
+offset_right = 300.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StoragePanel30"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="StoragePanel30/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "PC Storage"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="StoragePanel30/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Storage: 0/30"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="StoragePanel30/VBoxContainer"]
+custom_minimum_size = Vector2(0, 400)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Grid" type="GridContainer" parent="StoragePanel30/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 5
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="CloseButton" type="Button" parent="StoragePanel30/VBoxContainer"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Close"

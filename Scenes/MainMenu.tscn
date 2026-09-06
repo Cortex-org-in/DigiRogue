@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://dvcawy474sc0r"]
 
 [ext_resource type="Script" uid="uid://c51sek8d5bsaq" path="res://scripts/MainMenu.gd" id="1_tt5f1"]
+[ext_resource type="Texture2D" uid="uid://c8bdwosfbyuk0" path="res://assets/DigiRogue Logo.png" id="2_logo"]
+[ext_resource type="AudioStream" uid="uid://kdoix8qxdorr" path="res://assets/music/xDeviruchi - Title Theme .wav" id="3_music"]
+[ext_resource type="Texture2D" uid="uid://bfd3mx8bwmu2e" path="res://assets/background/title background/no_clouds_v2.png" id="4_bg"]
+[ext_resource type="Texture2D" uid="uid://cfqgtp888vo31" path="res://assets/background/title background/digimon_roguelike_logo.png" id="5_logo_text"]
 
 [node name="MainMenu" type="Control" unique_id=1732516856]
 layout_mode = 3
@@ -11,53 +15,86 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_tt5f1")
 
-[node name="Background" type="ColorRect" parent="." unique_id=81512475]
+[node name="Background" type="TextureRect" parent="." unique_id=81512475]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.12, 1)
+texture = ExtResource("4_bg")
+expand_mode = 3
+stretch_mode = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1127695564]
-custom_minimum_size = Vector2(480, 0)
+[node name="TitleLogo" type="TextureRect" parent="." unique_id=1080817707]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -200.0
-offset_right = 240.0
-offset_bottom = 200.0
+offset_left = -380.0
+offset_top = -310.0
+offset_right = 380.0
+offset_bottom = -50.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 24
+texture = ExtResource("2_logo")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1127695564]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1714370767]
+[node name="SubtitleLogo" type="TextureRect" parent="VBoxContainer" unique_id=38814786]
+custom_minimum_size = Vector2(1200, 180)
 layout_mode = 2
-theme_override_font_sizes/font_size = 52
-text = "Dig1R0gue"
-horizontal_alignment = 1
-
-[node name="SubtitleLabel" type="Label" parent="VBoxContainer" unique_id=38814786]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "A Digimon Roguelike"
-horizontal_alignment = 1
+texture = ExtResource("5_logo_text")
+expand_mode = 3
+stretch_mode = 5
 
 [node name="Spacer" type="Control" parent="VBoxContainer" unique_id=2083547852]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
-[node name="NewRunButton" type="Button" parent="VBoxContainer" unique_id=1118311971]
-custom_minimum_size = Vector2(420, 64)
+[node name="LoginButton" type="Button" parent="VBoxContainer" unique_id=1316409474]
+custom_minimum_size = Vector2(420, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "New Run"
+theme_override_font_sizes/font_size = 20
+text = "Login with Google"
+
+[node name="GuestButton" type="Button" parent="VBoxContainer" unique_id=954356486]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Play as Guest"
+
+[node name="LoggedInLabel" type="Label" parent="VBoxContainer" unique_id=1226306186]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="LogoutButton" type="Button" parent="VBoxContainer" unique_id=1098753963]
+visible = false
+custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Logout"
 
 [node name="BestRunLabel" type="Label" parent="VBoxContainer" unique_id=1422677059]
 layout_mode = 2
@@ -72,3 +109,7 @@ offset_bottom = 23.0
 theme_override_font_sizes/font_size = 11
 text = "0.1"
 vertical_alignment = 2
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1844271173]
+stream = ExtResource("3_music")
+autoplay = true

@@ -205,6 +205,7 @@ func save_data():
 	cfg.set_value("gacha", "tickets", tickets)
 	cfg.set_value("gacha", "owned", owned)
 	cfg.save(SAVE_PATH)
+	_sync_to_cloud()
 
 func load_data():
 	tickets = 0
@@ -216,3 +217,36 @@ func load_data():
 	var data = cfg.get_value("gacha", "owned", {})
 	if data is Dictionary:
 		owned = data
+
+func load_from_cloud():
+	if not AuthManager.is_logged_in():
+		return
+	var cloud_data = await AuthManager.load_from_cloud()
+	if cloud_data.is_empty():
+		# No cloud data yet — push local data to cloud
+		_sync_to_cloud()
+		return
+	# Cloud data found — load it
+	tickets = int(cloud_data.get("tickets", 0))
+	var cloud_owned = cloud_data.get("owned", {})
+	if cloud_owned is Dictionary:
+		owned = cloud_owned
+	# Also save locally
+	var cfg = ConfigFile.new()
+	cfg.set_value("gacha", "tickets", tickets)
+	cfg.set_value("gacha", "owned", owned)
+	cfg.save(SAVE_PATH)
+	print("GachaData: Loaded from cloud")
+
+func _sync_to_cloud():
+	if not AuthManager.is_logged_in():
+		return
+	var data = {
+		"tickets": tickets,
+		"owned": owned,
+	}
+	var ok = await AuthManager.save_to_cloud(data)
+	if ok:
+		print("GachaData: Synced to cloud")
+	else:
+		print("GachaData: Cloud sync failed")

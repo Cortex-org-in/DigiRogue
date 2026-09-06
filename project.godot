@@ -15,6 +15,10 @@ run/main_scene="uid://dvcawy474sc0r"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[audio]
+
+driver/wasapi_exclusive=false
+
 [autoload]
 
 ItemDB="*res://scripts/ItemDB.gd"
@@ -22,6 +26,7 @@ DigimonDB="*uid://duhrmqhhvopmm"
 SaveData="*uid://cw8kfqhecdcho"
 EncounterManager="*uid://bqicy0pemib61"
 BattleSystem="*uid://bm3ytd70n66dx"
+AuthManager="*res://scripts/AuthManager.gd"
 GachaData="*res://scripts/GachaData.gd"
 
 [display]

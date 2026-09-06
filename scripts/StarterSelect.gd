@@ -10,20 +10,20 @@ extends Control
 # (These match the node names you'll create in the .tscn)
 @onready var starter_grid    = $MarginContainer/VBox/HBox/StarterGrid
 @onready var detail_panel    = $MarginContainer/VBox/HBox/DetailPanel
-@onready var detail_name     = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/DigimonName
-@onready var detail_type     = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/TypeLabel
-@onready var detail_desc     = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Description
-@onready var detail_sprite   = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/SpritePreview
-@onready var stat_hp         = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/HPBar
-@onready var stat_atk        = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/ATKBar
-@onready var stat_def        = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/DEFBar
-@onready var stat_spd        = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/SPDBar
-@onready var stat_hp_val     = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/HPVal
-@onready var stat_atk_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/ATKVal
-@onready var stat_def_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/DEFVal
-@onready var stat_spd_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/Stats/SPDVal
-@onready var moves_label     = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/MovesLabel
-@onready var evo_label       = $MarginContainer/VBox/HBox/DetailPanel/VBox/Scroll/DetailScroll/EvoLabel
+@onready var detail_name     = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/DigimonName
+@onready var detail_type     = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/TypeLabel
+@onready var detail_desc     = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Description
+@onready var detail_sprite   = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/SpritePreview
+@onready var stat_hp         = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/HPBar
+@onready var stat_atk        = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/ATKBar
+@onready var stat_def        = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/DEFBar
+@onready var stat_spd        = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/SPDBar
+@onready var stat_hp_val     = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/HPVal
+@onready var stat_atk_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/ATKVal
+@onready var stat_def_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/DEFVal
+@onready var stat_spd_val    = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/Stats/SPDVal
+@onready var moves_label     = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/MovesLabel
+@onready var evo_label       = $MarginContainer/VBox/HBox/DetailPanel/VBox/InnerMargin/Scroll/DetailScroll/EvoLabel
 @onready var confirm_button  = $MarginContainer/VBox/HBox/DetailPanel/VBox/ConfirmButton
 @onready var title_label     = $MarginContainer/VBox/TitleLabel
 @onready var sub_label       = $MarginContainer/VBox/SubLabel
@@ -114,6 +114,18 @@ func _build_starter_grid():
 		var card = PanelContainer.new()
 		card.custom_minimum_size = Vector2(110, 130)
 		card.name = starter_name + "Card"
+
+		var card_bg = StyleBoxFlat.new()
+		card_bg.bg_color = Color(0.08, 0.08, 0.15, 0.92)
+		card_bg.corner_radius_top_left     = 8
+		card_bg.corner_radius_top_right    = 8
+		card_bg.corner_radius_bottom_left  = 8
+		card_bg.corner_radius_bottom_right = 8
+		card_bg.content_margin_left   = 4
+		card_bg.content_margin_right  = 4
+		card_bg.content_margin_top    = 4
+		card_bg.content_margin_bottom = 4
+		card.add_theme_stylebox_override("panel", card_bg)
 		
 		var vbox = VBoxContainer.new()
 		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -339,7 +351,7 @@ func _start_game_with_starters():
 
 func _make_selected_style() -> StyleBoxFlat:
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.3, 0.2, 0.7, 0.3)
+	style.bg_color = Color(0.25, 0.2, 0.55, 0.92)
 	style.border_width_top    = 2
 	style.border_width_bottom = 2
 	style.border_width_left   = 2
@@ -349,6 +361,10 @@ func _make_selected_style() -> StyleBoxFlat:
 	style.corner_radius_top_right    = 8
 	style.corner_radius_bottom_left  = 8
 	style.corner_radius_bottom_right = 8
+	style.content_margin_left   = 4
+	style.content_margin_right  = 4
+	style.content_margin_top    = 4
+	style.content_margin_bottom = 4
 	return style
 
 # ─────────────────────────────────────────────────────

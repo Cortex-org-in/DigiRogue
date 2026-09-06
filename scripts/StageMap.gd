@@ -47,6 +47,16 @@ extends Control
 @onready var shop_list          = $ShopPanel/VBoxContainer/ShopList
 @onready var leave_shop_button  = $ShopPanel/VBoxContainer/LeaveShopButton
 
+@onready var swap_prompt_panel  = $SwapPromptPanel
+@onready var swap_yes_button    = $SwapPromptPanel/VBoxContainer/HBoxContainer/YesButton
+@onready var swap_no_button     = $SwapPromptPanel/VBoxContainer/HBoxContainer/NoButton
+@onready var pick_party_panel   = $PickPartyPanel
+@onready var pick_party_list    = $PickPartyPanel/VBoxContainer/ScrollContainer/List
+@onready var pick_party_cancel  = $PickPartyPanel/VBoxContainer/CancelButton
+@onready var guest_swap_panel   = $GuestSwapPanel
+@onready var guest_swap_list    = $GuestSwapPanel/VBoxContainer/ScrollContainer/List
+@onready var guest_swap_skip    = $GuestSwapPanel/VBoxContainer/SkipButton
+
 @onready var encounter_flash    = $EncounterFlash
 
 # ── STAGE TYPES ───────────────────────────────────────
@@ -60,6 +70,7 @@ var training_levels_used: int = 0   # max 5 bonus levels per training ground
 var stage_buttons: Array     = []
 var can_interact: bool       = true
 var shop_stock: Array        = []   # shop items for the current shop
+var _swap_stored_index: int = -1  # party index being sent to storage during swap flow
 
 # ── MYSTERY DOOR OUTCOMES ────────────────────────────
 # ally (Digimon joins as a guest) is the most common outcome
@@ -116,6 +127,10 @@ func _ready():
 	training_train_btn.pressed.connect(_on_training_train)
 	training_leave_btn.pressed.connect(_on_training_leave)
 	leave_shop_button.pressed.connect(_on_leave_shop)
+	swap_yes_button.pressed.connect(_on_swap_yes)
+	swap_no_button.pressed.connect(_on_swap_no)
+	pick_party_cancel.pressed.connect(_on_pick_party_cancel)
+	guest_swap_skip.pressed.connect(_on_guest_swap_skip)
 
 	_build_stage_ui()
 	_update_hud()
@@ -160,6 +175,12 @@ func _on_stage_pressed(stage_num: int):
 func _auto_start():
 	can_interact = false
 	await get_tree().create_timer(0.6).timeout
+	# Offer to swap party/storage before the next stage
+	if SaveData.digimon_roster.size() > 1 and SaveData.guest_roster.size() > 0:
+		open_swap_prompt()
+		await get_tree().create_timer(0.1).timeout
+		while not can_interact:
+			await get_tree().create_timer(0.1).timeout
 	await _trigger_current_stage()
 
 func _auto_advance():
@@ -254,12 +275,26 @@ func _roll_door_outcomes() -> Array:
 	return outcomes
 
 func _weighted_door_pick() -> String:
+	# Demon door probability increases as player approaches hell region (floor 41+)
+	var demon_weight = 0.05
+	if current_stage >= 31:
+		demon_weight = 0.15
+	if current_stage >= 36:
+		demon_weight = 0.25
+	if current_stage >= 39:
+		demon_weight = 0.35
+	var weights = {
+		"ally": 0.62,
+		"training": 0.19,
+		"shop": 0.14,
+		"demon": demon_weight,
+	}
 	var total = 0.0
-	for value in DOOR_WEIGHTS.values():
+	for value in weights.values():
 		total += value
 	var roll = randf() * total
-	for key in DOOR_WEIGHTS:
-		roll -= DOOR_WEIGHTS[key]
+	for key in weights:
+		roll -= weights[key]
 		if roll <= 0:
 			return key
 	return "ally"
@@ -529,3 +564,89 @@ func _flash_screen():
 	tween.tween_property(encounter_flash, "modulate", Color(1,1,1,1), 0.1)
 	tween.tween_property(encounter_flash, "modulate", Color(1,1,1,0), 0.1)
 	await get_tree().create_timer(0.4).timeout
+
+# ─────────────────────────────────────────────────────
+#  SWAP PROMPT FLOW
+#  Ask "Send any digimon to storage?" → pick member → optionally swap guest in
+# ─────────────────────────────────────────────────────
+
+func open_swap_prompt():
+	if SaveData.digimon_roster.size() <= 1:
+		return
+	if SaveData.guest_roster.is_empty() and SaveData.storage_roster.size() >= SaveData.MAX_STORAGE:
+		return
+	can_interact = false
+	swap_prompt_panel.visible = true
+
+func _on_swap_yes():
+	swap_prompt_panel.visible = false
+	# Show party list to pick who to send to storage
+	_rebuild_pick_party_list()
+	pick_party_panel.visible = true
+
+func _on_swap_no():
+	swap_prompt_panel.visible = false
+	can_interact = true
+
+func _on_pick_party_cancel():
+	pick_party_panel.visible = false
+	can_interact = true
+
+func _rebuild_pick_party_list():
+	for child in pick_party_list.get_children():
+		child.queue_free()
+	for i in range(SaveData.digimon_roster.size()):
+		var d = SaveData.digimon_roster[i]
+		var is_active = d.get("name", "") == SaveData.current_digimon.get("name", "")
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(0, 36)
+		btn.add_theme_font_size_override("font_size", 14)
+		btn.text = "%s  Lv.%d  HP %d/%d" % [d.get("name","???"), d.get("level",1), d.get("current_hp",0), d.get("hp",1)]
+		if is_active:
+			btn.disabled = true
+		else:
+			btn.pressed.connect(_on_pick_party_select.bind(i))
+		pick_party_list.add_child(btn)
+
+func _on_pick_party_select(party_index: int):
+	_swap_stored_index = party_index
+	pick_party_panel.visible = false
+	# Now show guest swap option
+	_rebuild_guest_swap_list()
+	guest_swap_panel.visible = true
+
+func _rebuild_guest_swap_list():
+	for child in guest_swap_list.get_children():
+		child.queue_free()
+	for i in range(SaveData.guest_roster.size()):
+		var g = SaveData.guest_roster[i]
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(0, 36)
+		btn.add_theme_font_size_override("font_size", 14)
+		btn.text = "%s  Lv.%d  HP %d/%d" % [g.get("name","???"), g.get("level",1), g.get("current_hp",0), g.get("hp",1)]
+		btn.pressed.connect(_on_guest_swap_select.bind(i))
+		guest_swap_list.add_child(btn)
+	if SaveData.guest_roster.is_empty():
+		var lbl = Label.new()
+		lbl.text = "No guests to swap in."
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 14)
+		guest_swap_list.add_child(lbl)
+
+func _on_guest_swap_select(guest_index: int):
+	guest_swap_panel.visible = false
+	# Send the party member to storage
+	SaveData.send_to_storage(_swap_stored_index)
+	# Pull guest into party
+	SaveData.withdraw_guest_to_party(guest_index)
+	_swap_stored_index = -1
+	can_interact = true
+	_update_hud()
+
+func _on_guest_swap_skip():
+	guest_swap_panel.visible = false
+	# Still send the party member to storage (just no guest swap)
+	SaveData.send_to_storage(_swap_stored_index)
+	_swap_stored_index = -1
+	can_interact = true
+	_update_hud()
