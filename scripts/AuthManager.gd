@@ -11,8 +11,8 @@ signal auth_changed(user_info: Dictionary)
 const FIREBASE_PROJECT = "fir-1-82a66"
 const TOKEN_SAVE_PATH = "user://auth_tokens.json"
 
-var _client_id: String = ""
-var _client_secret: String = ""
+var CLIENT_ID: String = ""
+var CLIENT_SECRET: String = ""
 
 var is_web: bool = false
 var current_user: Dictionary = {}
@@ -31,8 +31,10 @@ var _callback_file: String = ""
 var _ps_process_id: int = -1
 
 func _ready():
-	_client_id = OS.get_environment("GOOGLE__client_id")
-	_client_secret = OS.get_environment("GOOGLE_CLIENT_SECRET")
+	var cfg = ConfigFile.new()
+	if cfg.load("res://config.cfg") == OK:
+		CLIENT_ID = cfg.get_value("auth", "client_id", "")
+		CLIENT_SECRET = cfg.get_value("auth", "client_secret", "")
 	is_web = OS.has_feature("web")
 	if not is_web:
 		_load_tokens()
@@ -187,7 +189,7 @@ func _login_desktop():
 	# Build Google OAuth URL with PKCE
 	var redirect_uri = "http://localhost:%d" % _callback_port
 	var auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
-	auth_url += "?client_id=" + _client_id.uri_encode()
+	auth_url += "?client_id=" + CLIENT_ID.uri_encode()
 	auth_url += "&redirect_uri=" + redirect_uri.uri_encode()
 	auth_url += "&response_type=code"
 	auth_url += "&scope=" + "openid email profile".uri_encode()
@@ -285,8 +287,8 @@ func _exchange_code_for_tokens(auth_code: String):
 
 	var body = "code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code&code_verifier=%s" % [
 		auth_code.uri_encode(),
-		_client_id.uri_encode(),
-		_client_secret.uri_encode(),
+		CLIENT_ID.uri_encode(),
+		CLIENT_SECRET.uri_encode(),
 		redirect_uri.uri_encode(),
 		_code_verifier.uri_encode()
 	]
@@ -367,7 +369,7 @@ func _refresh_access_token() -> bool:
 	add_child(http)
 
 	var body = "client_id=%s&refresh_token=%s&grant_type=refresh_token" % [
-		_client_id.uri_encode(),
+		CLIENT_ID.uri_encode(),
 		_refresh_token.uri_encode()
 	]
 
