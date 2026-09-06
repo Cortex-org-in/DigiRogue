@@ -516,9 +516,9 @@ func _on_send_out_pressed():
 	elif p_front_path != "" and ResourceLoader.exists(p_front_path):
 		player_sprite.texture = load(p_front_path)
 		player_sprite.flip_h = true
-	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
+	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""), 1.0, player_digimon.get("name", ""))
+	player_sprite.position.y = 430 if player_digimon.get("name", "") != "Palmon" else 400
 	_update_player_ui()
-	_add_log("%s, come back!" % old_name)
 	_add_log("Go, %s!" % selected.get("name", "???"))
 	_show_next_log()
 	await get_tree().create_timer(1.0).timeout
@@ -626,7 +626,8 @@ func _setup_ui():
 	else:
 		_set_placeholder_sprite(player_sprite, Color(1.0, 0.4, 0.1))
 
-	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
+	_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""), 1.0, player_digimon.get("name", ""))
+	player_sprite.position.y = 430 if player_digimon.get("name", "") != "Palmon" else 400
 
 	var e_sprite_path = enemy_digimon.get("sprite", "")
 	if e_sprite_path != "" and ResourceLoader.exists(e_sprite_path):
@@ -672,13 +673,16 @@ func _setup_ui():
 		player_platform_path = "res://assets/Platform/enemybaseBurning.png"
 
 	# Position platforms at feet of each Digimon
+	var platform_scale = Vector2(1.3, 1.3)
 	if ResourceLoader.exists(enemy_platform_path):
 		enemy_sand_ground.texture = _make_outlined_sand(load(enemy_platform_path))
+		enemy_sand_ground.scale = platform_scale
 	enemy_sand_ground.position = Vector2(enemy_sprite.position.x, enemy_sprite.position.y + 120)
 
 	if ResourceLoader.exists(player_platform_path):
 		player_sand_ground.texture = _make_outlined_sand(load(player_platform_path))
-	player_sand_ground.position = Vector2(player_sprite.position.x, player_sprite.position.y + 200)
+		player_sand_ground.scale = platform_scale
+	player_sand_ground.position = Vector2(player_sprite.position.x, player_sprite.position.y + 150)
 
 	_update_move_buttons()
 
@@ -712,7 +716,7 @@ func _make_outlined_sand(src_tex: Texture2D) -> Texture2D:
 					outline.set_pixel(x, y, Color(0.15, 0.12, 0.08, 1))
 	return ImageTexture.create_from_image(outline)
 
-func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = "", stretch_w: float = 1.0):
+func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = "", stretch_w: float = 1.0, digimon_name: String = ""):
 	var tex = sprite.texture
 	if not tex:
 		return
@@ -722,6 +726,8 @@ func _fit_sprite(sprite: Sprite2D, max_w: float, max_h: float, stage: String = "
 	var scale_y = max_h / th
 	var s = minf(scale_x, scale_y)
 	s *= _get_stage_size_multiplier(stage)
+	if digimon_name == "Biyomon":
+		s *= 0.85
 	sprite.scale = Vector2(s * stretch_w, s)
 
 func _get_stage_size_multiplier(stage: String) -> float:
@@ -1381,7 +1387,8 @@ func _try_party_swap() -> bool:
 		elif p_front_path != "" and ResourceLoader.exists(p_front_path):
 			player_sprite.texture = load(p_front_path)
 			player_sprite.flip_h = true
-		_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""))
+		_fit_sprite(player_sprite, 450.0, 540.0, player_digimon.get("stage", ""), 1.0, player_digimon.get("name", ""))
+		player_sprite.position.y = 430 if player_digimon.get("name", "") != "Palmon" else 400
 		_setup_ui()
 		_update_all_ui()
 		player_swapped_this_turn = true
