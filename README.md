@@ -68,7 +68,7 @@ The experience follows a simple loop:
   <img src="login.png" alt="Main Menu" width="800">
 </p>
 
-Title screen with Google login, guest mode, and best run display.
+Title screen with Google login and best run display.
 
 ### StarterSelect
 
