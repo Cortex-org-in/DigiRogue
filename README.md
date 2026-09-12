@@ -25,7 +25,7 @@ DigiRogue is a stage-based roguelike inspired by PokeRogue and Time Stranger. Th
 
 <!-- REPLACE: screenshot of StarterSelect screen -->
 <p align="center">
-  <img src="screenshots/starter_select.png" alt="Starter Select" width="800">
+  <img src="" alt="Starter Select" width="800">
 </p>
 
 The experience follows a simple loop:
