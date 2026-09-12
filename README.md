@@ -97,6 +97,7 @@ Full Pokemon-style battle UI — enemy info (top-left), player info (right), are
 <p align="center">
   <img src="reward1.png" alt="Reward Scene" width="800">
   <img src="reward2.png" alt="Reward Scene" width="800">
+  <img src="reward3.png" alt="Reward Scene" width="800">
 </p>
 
 Post-battle victory — XP/digi rewards, level-up stat changes, digivolution notifications, 3 paid + 3 free item picks, reroll, PC storage.
