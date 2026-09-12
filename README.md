@@ -19,7 +19,7 @@
 
 ---
 
-## Product Tour
+## Game Tour
 
 DigiRogue is a stage-based roguelike inspired by PokeRogue and Time Stranger. The player picks starter Digimon, pushes through 50 floors of battles, mystery doors, shops, and boss fights, and tries to reach the end with a strong evolved party.
 
@@ -65,7 +65,7 @@ The experience follows a simple loop:
 
 <!-- REPLACE: screenshot of MainMenu -->
 <p align="center">
-  <img src="screenshots/main_menu.png" alt="Main Menu" width="800">
+  <img src="login.png" alt="Main Menu" width="800">
 </p>
 
 Title screen with Google login, guest mode, and best run display.
@@ -74,7 +74,8 @@ Title screen with Google login, guest mode, and best run display.
 
 <!-- REPLACE: screenshot of StarterSelect -->
 <p align="center">
-  <img src="screenshots/starter_select.png" alt="Starter Select" width="800">
+  <img src="starter_select.png" alt="Starter Select" width="800">
+  <img src="starter_select2.png" alt="Starter Select" width="800">
 </p>
 
 Choose up to 3 starters from 8 Rookie Digimon. View stats, moves, type, evolution chain. Access the Digimon Gacha to pull Champions.
@@ -84,7 +85,12 @@ Choose up to 3 starters from 8 Rookie Digimon. View stats, moves, type, evolutio
 
 <!-- REPLACE: screenshot of BattleScene -->
 <p align="center">
-  <img src="screenshots/battle_scene.png" alt="Battle Scene" width="800">
+  <img src="battle.png" alt="Battle Scene" width="800">
+  <img src="battle2.png" alt="Battle Scene" width="800">
+  <img src="battle3.png" alt="Battle Scene" width="800">
+  <img src="battle4.png" alt="Battle Scene" width="800">
+  <img src="battle5.png" alt="Battle Scene" width="800">
+  <img src="battle6.png" alt="Battle Scene" width="800">
 </p>
 
 Full Pokemon-style battle UI — enemy info (top-left), player info (right), area indicator with floor number (top-left), 4-button menu (Fight / Digivice / Run / Digimon), move selection, item usage, digivolve mid-battle, catch system.
@@ -93,7 +99,8 @@ Full Pokemon-style battle UI — enemy info (top-left), player info (right), are
 
 <!-- REPLACE: screenshot of RewardScene -->
 <p align="center">
-  <img src="screenshots/reward_scene.png" alt="Reward Scene" width="800">
+  <img src="reward1.png" alt="Reward Scene" width="800">
+  <img src="reward2.png" alt="Reward Scene" width="800">
 </p>
 
 Post-battle victory — XP/digi rewards, level-up stat changes, digivolution notifications, 3 paid + 3 free item picks, reroll, PC storage.
