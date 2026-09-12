@@ -79,14 +79,6 @@ Title screen with Google login, guest mode, and best run display.
 
 Choose up to 3 starters from 8 Rookie Digimon. View stats, moves, type, evolution chain. Access the Digimon Gacha to pull Champions.
 
-### StageMap
-
-<!-- REPLACE: screenshot of StageMap -->
-<p align="center">
-  <img src="screenshots/stage_map.png" alt="Stage Map" width="800">
-</p>
-
-50-floor roguelike progression map. Linear path with mystery doors, boss markers, party management, and shop access.
 
 ### BattleScene
 
