@@ -86,11 +86,7 @@ Choose up to 3 starters from 8 Rookie Digimon. View stats, moves, type, evolutio
 <!-- REPLACE: screenshot of BattleScene -->
 <p align="center">
   <img src="battle.png" alt="Battle Scene" width="800">
-  <img src="battle2.png" alt="Battle Scene" width="800">
-  <img src="battle3.png" alt="Battle Scene" width="800">
   <img src="battle4.png" alt="Battle Scene" width="800">
-  <img src="battle5.png" alt="Battle Scene" width="800">
-  <img src="battle6.png" alt="Battle Scene" width="800">
 </p>
 
 Full Pokemon-style battle UI — enemy info (top-left), player info (right), area indicator with floor number (top-left), 4-button menu (Fight / Digivice / Run / Digimon), move selection, item usage, digivolve mid-battle, catch system.
