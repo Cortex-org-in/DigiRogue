@@ -1,6 +1,6 @@
 <!-- HERO — replace path with your screenshot -->
 <p align="center">
-  <img src="Thumbnail.png" alt="DigiRogue Battle" width="800">
+  <img src="humbnail.png" alt="DigiRogue Battle" width="800">
 </p>
 
 <h1 align="center">DigiRogue</h1>
