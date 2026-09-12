@@ -74,8 +74,8 @@ Title screen with Google login, guest mode, and best run display.
 
 <!-- REPLACE: screenshot of StarterSelect -->
 <p align="center">
-  <img src="starter_select.png" alt="Starter Select" width="800">
-  <img src="starter_select2.png" alt="Starter Select" width="800">
+  <img src="starter_select.png" alt="Starter_Select" width="800">
+  <img src="starter_select2.png" alt="Starter_Select" width="800">
 </p>
 
 Choose up to 3 starters from 8 Rookie Digimon. View stats, moves, type, evolution chain. Access the Digimon Gacha to pull Champions.
